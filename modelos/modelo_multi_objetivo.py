@@ -88,7 +88,7 @@ class ModeloEletropostosMultiObjetivo:
     
     def resolver(self):
         """Resolve o modelo conforme o tipo de objetivo selecionado"""
-        print(f"\n�� RESOLVENDO MODELO: {self.tipo_objetivo.upper()}")
+        print(f"\n RESOLVENDO MODELO: {self.tipo_objetivo.upper()}")
         
         if self.tipo_objetivo == 'minimizar_custo':
             return self._resolver_minimizar_custo()
