@@ -1,0 +1,4 @@
+tipo_pv,potencia_kw,area_m2,custo_instalacao_reais,descricao
+0,30,150,100000,Carport pequeno - até 4 vagas
+1,60,300,180000,Carport médio - até 8 vagas
+2,100,500,250000,Carport grande - até 12 vagas

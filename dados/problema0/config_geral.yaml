@@ -1,0 +1,31 @@
+# Configurações Gerais do Problema 0 - FCSA MILP
+# Baseado na tese de Caio dos Santos (Unicamp, 2021)
+
+problema:
+  nome: "Problema 0 - Caso Sintético Médio"
+  descricao: "5 links, 24 períodos, 3 tipos PV"
+  data_criacao: "2025-01-15"
+  versao: "1.0"
+
+dimensoes:
+  num_links: 5
+  num_periodos: 24
+  num_tipos_pv: 3
+
+parametros_financeiros:
+  alpha: 0.10              # Taxa de juros anual (10%)
+  Delta_h: 10              # Horizonte de planejamento (anos)
+  h: 1                     # Intervalo de tempo (horas)
+  
+parametros_otimizacao:
+  gamma: 150               # Peso dos benefícios de transporte
+  min_estacoes: 1          # Número mínimo de estações
+  BIG_M: null              # null = calcular automaticamente
+  
+parametros_area:
+  a: 1.0                   # Fator de área para carports
+
+solver:
+  time_limit: 600          # Limite de tempo em segundos
+  mip_gap: 0.01            # Gap de otimalidade (1%)
+  log_output: true         # Exibir log do solver

@@ -1,0 +1,6 @@
+link_id,custo_instalacao_reais,descricao
+0,180000,Centro principal - infraestrutura complexa
+1,150000,Centro secundário - infraestrutura moderada
+2,130000,Zona comercial - infraestrutura padrão
+3,120000,Zona industrial - infraestrutura básica
+4,110000,Zona residencial - instalação simplificada

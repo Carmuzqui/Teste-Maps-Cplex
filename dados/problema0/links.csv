@@ -1,0 +1,6 @@
+link_id,nome,latitude,longitude,tipo_zona,descricao
+0,Centro_Principal,-3.7319,-38.5267,comercial,Centro histórico e comercial principal
+1,Centro_Secundario,-3.7234,-38.5455,comercial,Centro administrativo secundário
+2,Zona_Comercial,-3.7431,-38.5122,comercial,Distrito comercial expandido
+3,Zona_Industrial,-3.7588,-38.5344,industrial,Parque industrial e logístico
+4,Zona_Residencial,-3.7156,-38.5089,residencial,Bairro residencial de classe média
