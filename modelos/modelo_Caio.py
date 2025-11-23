@@ -1,954 +1,218 @@
-# """
-# Modelo FCSA (Fast Charging Station Allocation) - MILP Linearizado
-# Artículo 1: Modelo MINLP convertido a MILP usando linearización manuscrita
-# Basado en la tesis de Caio dos Santos (Unicamp, 2021)
-
-# VERSIÓN CORRIGIDA: Linearización con demanda efectiva (x_l * E_d)
-# """
-
-# import numpy as np
-# from docplex.mp.model import Model
-# import time
-# from typing import List, Dict, Optional
-
-# class ModeloFCSA_MILP:
-#     def __init__(self,
-#                  L: List[int],
-#                  T: List[int],
-#                  K: List[int],
-#                  parametros: Dict):
-#         """
-#         Inicializa o modelo FCSA MILP linearizado
-        
-#         Args:
-#             L: Lista de IDs de links (aristas da rede)
-#             T: Lista de períodos de tempo (0, 1, ..., 23 para horas)
-#             K: Lista de tipos de carport PV (0, 1, 2, ...)
-#             parametros: {dict com todos os parâmetros}
-#         """
-#         self.L = L
-#         self.T = T
-#         self.K = K
-#         self.params = parametros
-        
-#         # Extrair parâmetros
-#         self.c_CS = parametros['c_CS_l']
-#         self.c_PV = parametros['c_PV_k']
-#         self.c_e = parametros['c_e_t']
-#         self.P_k = parametros['P_k']
-#         self.sh = parametros['sh_lt']
-#         self.a_k = parametros['a_k']
-#         self.cp = parametros['cp_l']
-#         self.a = parametros.get('a', 1.0)
-#         self.E_d = parametros['E_d_lt']
-#         self.rho = parametros['rho_l']
-#         self.beta = parametros['beta_l']
-#         self.alpha = parametros['alpha']
-#         self.Delta_h = parametros['Delta_h']
-#         self.h = parametros.get('h', 1)
-#         self.gamma = parametros['gamma']
-        
-#         # Calcular BIG_M se não fornecido
-#         if parametros.get('BIG_M') is None:
-#             self.BIG_M = self._calcular_big_m()
-#         else:
-#             self.BIG_M = parametros['BIG_M']
-        
-#         # Calcular fator de valor presente
-#         self.fator_vp = self._calcular_fator_valor_presente()
-        
-#         # Resultados
-#         self.modelo = None
-#         self.estacoes_instaladas = []
-#         self.carports_instalados = {}
-#         self.custo_investimento = 0
-#         self.custo_operacao_vp = 0
-#         self.beneficio_transporte = 0
-#         self.valor_objetivo = 0
-#         self.tempo_solucao = 0
-#         self.gap_otimalidade = 0
-    
-#     def _calcular_big_m(self) -> float:
-#         """Calcula Big-M como a máxima geração PV possível + margem"""
-#         max_geracao_pv = max(
-#             self.P_k[k] * self.sh.get((l, t), 0)
-#             for l in self.L
-#             for t in self.T
-#             for k in self.K
-#         )
-#         # Adicionar margem de segurança (50%)
-#         return max_geracao_pv * 1.5
-    
-#     def _calcular_fator_valor_presente(self) -> float:
-#         """
-#         Calcula fator de conversão a valor presente:
-#         fator = [(1+α)^Δh - 1] / [α · (1+α)^h · (1+α)^Δh]
-#         """
-#         alpha = self.alpha
-#         Delta_h = self.Delta_h
-#         h = self.h
-        
-#         numerador = (1 + alpha)**Delta_h - 1
-#         denominador = alpha * (1 + alpha)**h * (1 + alpha)**Delta_h
-        
-#         return numerador / denominador
-    
-#     def construir_modelo(self):
-#         """Constrói o modelo MILP linearizado"""
-#         print("\n" + "="*80)
-#         print("🔧 CONSTRUINDO MODELO FCSA MILP LINEARIZADO (v2 - CORRIGIDO)")
-#         print("="*80)
-#         print(f"📊 Links: {len(self.L)} | Períodos: {len(self.T)} | Tipos PV: {len(self.K)}")
-#         print(f"💰 Horizonte: {self.Delta_h} anos | Taxa: {self.alpha*100:.1f}%")
-#         print(f"🔢 Big-M: {self.BIG_M:.2f} | Fator VP: {self.fator_vp:.4f}")
-#         print("="*80)
-        
-#         self.modelo = Model('FCSA_MILP_Linearizado_v2')
-        
-#         # ==================== VARIÁVEIS DE DECISÃO ====================
-#         print("\n📝 Criando variáveis de decisão...")
-        
-#         # (12) x_l: Instalar estação de carga no link l
-#         x = self.modelo.binary_var_dict(self.L, name='x')
-#         print(f"   ✓ x_l: {len(self.L)} variáveis binárias (instalação de estação)")
-        
-#         # (12) w_{l,k}: Instalar carport PV tipo k no link l
-#         w = {}
-#         for l in self.L:
-#             for k in self.K:
-#                 w[(l, k)] = self.modelo.binary_var(name=f'w_{l}_{k}')
-#         print(f"   ✓ w_lk: {len(self.L)*len(self.K)} variáveis binárias (carport PV)")
-        
-#         # (13) E_{l,t}: Energia suprida ao link l no período t
-#         E = self.modelo.continuous_var_dict(
-#             [(l, t) for l in self.L for t in self.T],
-#             lb=0,
-#             name='E'
-#         )
-        
-#         # (5) E^{pv}_{l,t}: Geração PV no link l, período t
-#         E_pv = self.modelo.continuous_var_dict(
-#             [(l, t) for l in self.L for t in self.T],
-#             lb=0,
-#             name='E_pv'
-#         )
-        
-#         # (14) E^{-nm}_{l,t}: Energia importada (net-metering) no link l, período t
-#         E_minus_nm = self.modelo.continuous_var_dict(
-#             [(l, t) for l in self.L for t in self.T],
-#             lb=0,
-#             name='E_minus_nm'
-#         )
-        
-#         # (14) E^{+nm}_{l,t}: Energia exportada (net-metering) no link l, período t
-#         E_plus_nm = self.modelo.continuous_var_dict(
-#             [(l, t) for l in self.L for t in self.T],
-#             lb=0,
-#             name='E_plus_nm'
-#         )
-        
-#         # (15) E^{lot}_{l,t}: Energia excedente disponível para exportação
-#         E_lot = self.modelo.continuous_var_dict(
-#             [(l, t) for l in self.L for t in self.T],
-#             lb=0,
-#             name='E_lot'
-#         )
-        
-#         # (7) E^{nm}_t: Balance total de energia net-metering no período t
-#         E_nm = self.modelo.continuous_var_dict(self.T, lb=-self.BIG_M*10, name='E_nm')
-        
-#         # VARIABLE AUXILIAR: Demanda efectiva E_d_eff = x_l * E_d_lt
-#         E_d_eff = self.modelo.continuous_var_dict(
-#             [(l, t) for l in self.L for t in self.T],
-#             lb=0,
-#             name='E_d_eff'
-#         )
-#         print(f"   ✓ E_d_eff_lt: {len(self.L)*len(self.T)} variáveis contínuas (demanda efetiva)")
-        
-#         # VARIÁVEL AUXILIAR PARA LINEARIZAÇÃO (manuscrito)
-#         x_aux = self.modelo.binary_var_dict(
-#             [(l, t) for l in self.L for t in self.T],
-#             name='x_aux'
-#         )
-#         print(f"   ✓ x_aux_lt: {len(self.L)*len(self.T)} variáveis binárias (linearização)")
-        
-#         total_vars = self.modelo.number_of_variables
-#         print(f"\n✅ Total de variáveis: {total_vars}")
-        
-#         # ==================== FUNÇÃO OBJETIVO (3) ====================
-#         print("\n🎯 Construindo função objetivo (3 componentes)...")
-        
-#         # C_in: Custos de investimento
-#         C_in = self.modelo.sum(
-#             self.c_CS[l] * x[l] for l in self.L
-#         ) + self.modelo.sum(
-#             self.c_PV[k] * w[(l, k)]
-#             for l in self.L
-#             for k in self.K
-#         )
-#         print(f"   ✓ C_in: Custos de investimento (estações + carports)")
-        
-#         # C_op: Custos de operação (valor presente)
-#         C_op = self.fator_vp * self.modelo.sum(
-#             self.c_e[t] * E[(l, t)]
-#             for l in self.L
-#             for t in self.T
-#         )
-#         print(f"   ✓ C_op: Custos de operação a valor presente (fator={self.fator_vp:.4f})")
-        
-#         # f: Benefícios de transporte (maximizar = minimizar negativo)
-#         f_transporte = -self.gamma * self.modelo.sum(
-#             x[l] * self.rho[l] * self.beta[l]
-#             for l in self.L
-#         )
-#         print(f"   ✓ f: Benefícios de transporte (γ={self.gamma})")
-        
-#         # Função objetivo total
-#         self.modelo.minimize(C_in + C_op + f_transporte)
-#         print(f"\n🎯 Função objetivo: min [C_in + C_op - γ·Σ(x_l·ρ_l·β_l)]")
-        
-#         # ==================== RESTRIÇÕES ====================
-#         print("\n⚙️  Adicionando restrições...")
-        
-#         # NOVO: Linearização de E_d_eff = x_l * E_d_lt
-#         E_d_max = max(self.E_d.values()) if self.E_d else 1000
-#         for l in self.L:
-#             for t in self.T:
-#                 E_d_lt = self.E_d.get((l, t), 0)
-                
-#                 # Se x_l = 0: E_d_eff = 0
-#                 # Se x_l = 1: E_d_eff = E_d_lt
-                
-#                 # E_d_eff ≤ E_d_max * x_l
-#                 self.modelo.add_constraint(
-#                     E_d_eff[(l, t)] <= E_d_max * x[l],
-#                     ctname=f'demanda_eff_ub_{l}_{t}'
-#                 )
-                
-#                 # E_d_eff ≤ E_d_lt (sempre)
-#                 self.modelo.add_constraint(
-#                     E_d_eff[(l, t)] <= E_d_lt,
-#                     ctname=f'demanda_eff_ub2_{l}_{t}'
-#                 )
-                
-#                 # E_d_eff ≥ E_d_lt - E_d_max * (1 - x_l)
-#                 # Se x_l = 1: E_d_eff ≥ E_d_lt
-#                 # Se x_l = 0: E_d_eff ≥ E_d_lt - E_d_max (relaxado, pero E_d_eff ≤ 0 lo fuerza a 0)
-#                 self.modelo.add_constraint(
-#                     E_d_eff[(l, t)] >= E_d_lt - E_d_max * (1 - x[l]),
-#                     ctname=f'demanda_eff_lb_{l}_{t}'
-#                 )
-#         print(f"   ✓ (NEW) Linearização E_d_eff = x_l * E_d: {3*len(self.L)*len(self.T)} restrições")
-        
-#         # (4) Balance energético: E^{pv}_{l,t} + E^{-nm}_{l,t} + E^{+nm}_{l,t} = E_d_eff_{l,t} + E_{l,t}
-#         for l in self.L:
-#             for t in self.T:
-#                 self.modelo.add_constraint(
-#                     E_pv[(l, t)] + E_minus_nm[(l, t)] + E_plus_nm[(l, t)]
-#                     == E_d_eff[(l, t)] + E[(l, t)],
-#                     ctname=f'balance_energia_{l}_{t}'
-#                 )
-#         print(f"   ✓ (4) Balance energético: {len(self.L)*len(self.T)} restrições")
-        
-#         # (5) Geração PV: E^{pv}_{l,t} = Σ_k P_k · sh_{l,t} · w_{l,k}
-#         for l in self.L:
-#             for t in self.T:
-#                 self.modelo.add_constraint(
-#                     E_pv[(l, t)] == self.modelo.sum(
-#                         self.P_k[k] * self.sh.get((l, t), 0) * w[(l, k)]
-#                         for k in self.K
-#                     ),
-#                     ctname=f'geracao_pv_{l}_{t}'
-#                 )
-#         print(f"   ✓ (5) Geração PV: {len(self.L)*len(self.T)} restrições")
-        
-#         # (6) Limite de importação: E^{-nm}_{l,t} ≤ E^{nm}_{t-1}
-#         for l in self.L:
-#             for idx, t in enumerate(self.T):
-#                 if idx > 0:  # Para t > 0
-#                     t_anterior = self.T[idx - 1]
-#                     self.modelo.add_constraint(
-#                         E_minus_nm[(l, t)] <= E_nm[t_anterior],
-#                         ctname=f'limite_importacao_{l}_{t}'
-#                     )
-#                 else:  # Para t = 0, não pode importar (sem créditos prévios)
-#                     self.modelo.add_constraint(
-#                         E_minus_nm[(l, t)] == 0,
-#                         ctname=f'sem_creditos_iniciais_{l}_{t}'
-#                     )
-#         print(f"   ✓ (6) Limite de importação: {len(self.L)*len(self.T)} restrições")
-        
-#         # (7) Balance total net-metering: E^{nm}_t = Σ_l (E^{+nm}_{l,t} - E^{-nm}_{l,t})
-#         for t in self.T:
-#             self.modelo.add_constraint(
-#                 E_nm[t] == self.modelo.sum(
-#                     E_plus_nm[(l, t)] - E_minus_nm[(l, t)]
-#                     for l in self.L
-#                 ),
-#                 ctname=f'balance_nm_total_{t}'
-#             )
-#         print(f"   ✓ (7) Balance total net-metering: {len(self.T)} restrições")
-        
-#         # (8) LINEARIZAÇÃO CORRIGIDA: E^{lot}_{l,t} = max{0, E^{pv}_{l,t} - E_d_eff_{l,t}}
-#         # Usando técnica do manuscrito com Big-M único
-#         print(f"\n   🔧 APLICANDO LINEARIZAÇÃO MANUSCRITA (Big-M único) - VERSÃO CORRIGIDA...")
-        
-#         for l in self.L:
-#             for t in self.T:
-#                 # Ahora usamos E_d_eff en lugar de E_d_lt directamente
-                
-#                 # (L1) E^{lot} ≥ 0  [já garantido por lower bound]
-                
-#                 # (L2) E^{lot} ≥ E^{pv} - E_d_eff
-#                 self.modelo.add_constraint(
-#                     E_lot[(l, t)] >= E_pv[(l, t)] - E_d_eff[(l, t)],
-#                     ctname=f'lin_L2_{l}_{t}'
-#                 )
-                
-#                 # (L3) E^{lot} ≤ BIG_M · x_aux
-#                 # Se x_aux=0 (não há excedente), força E^{lot}=0
-#                 self.modelo.add_constraint(
-#                     E_lot[(l, t)] <= self.BIG_M * x_aux[(l, t)],
-#                     ctname=f'lin_L3_{l}_{t}'
-#                 )
-                
-#                 # (L4) E^{lot} ≤ (E^{pv} - E_d_eff) + BIG_M · (1 - x_aux)
-#                 # Se x_aux=1 (há excedente), força E^{lot} ≤ E^{pv} - E_d_eff
-#                 self.modelo.add_constraint(
-#                     E_lot[(l, t)] <= (E_pv[(l, t)] - E_d_eff[(l, t)]) + self.BIG_M * (1 - x_aux[(l, t)]),
-#                     ctname=f'lin_L4_{l}_{t}'
-#                 )
-        
-#         print(f"   ✓ (8-Lin) Linearização max{{0, E^pv - E_d_eff}}: {4*len(self.L)*len(self.T)} restrições")
-        
-#         # (9) Limite de exportação: E^{+nm}_{l,t} ≤ E^{lot}_{l,t}
-#         for l in self.L:
-#             for t in self.T:
-#                 self.modelo.add_constraint(
-#                     E_plus_nm[(l, t)] <= E_lot[(l, t)],
-#                     ctname=f'limite_exportacao_{l}_{t}'
-#                 )
-#         print(f"   ✓ (9) Limite de exportação: {len(self.L)*len(self.T)} restrições")
-        
-#         # (10) Restrição de área do carport: Σ_k a_k · w_{l,k} ≤ cp_l · a
-#         for l in self.L:
-#             self.modelo.add_constraint(
-#                 self.modelo.sum(
-#                     self.a_k[k] * w[(l, k)]
-#                     for k in self.K
-#                 ) <= self.cp[l] * self.a,
-#                 ctname=f'area_carport_{l}'
-#             )
-#         print(f"   ✓ (10) Restrição de área: {len(self.L)} restrições")
-        
-#         # (11) Carport requer estação: Σ_k w_{l,k} ≤ x_l
-#         for l in self.L:
-#             self.modelo.add_constraint(
-#                 self.modelo.sum(w[(l, k)] for k in self.K) <= x[l],
-#                 ctname=f'carport_requer_estacao_{l}'
-#             )
-#         print(f"   ✓ (11) Carport requer estação: {len(self.L)} restrições")
-        
-#         total_restricoes = self.modelo.number_of_constraints
-#         print(f"\n✅ Total de restrições: {total_restricoes}")
-        
-#         # Salvar variáveis para extração de resultados
-#         self._vars = {
-#             'x': x,
-#             'w': w,
-#             'E': E,
-#             'E_pv': E_pv,
-#             'E_minus_nm': E_minus_nm,
-#             'E_plus_nm': E_plus_nm,
-#             'E_lot': E_lot,
-#             'E_nm': E_nm,
-#             'E_d_eff': E_d_eff,
-#             'x_aux': x_aux
-#         }
-        
-#         print("\n" + "="*80)
-#         print(f"✅ MODELO CONSTRUÍDO COM SUCESSO (v2 - CORRIGIDO)")
-#         print(f"📊 Variáveis: {total_vars} | Restrições: {total_restricoes}")
-#         print(f"🔢 Variáveis binárias: {len(self.L) + len(self.L)*len(self.K) + len(self.L)*len(self.T)}")
-#         print(f"🔢 Variáveis contínuas: {total_vars - (len(self.L) + len(self.L)*len(self.K) + len(self.L)*len(self.T))}")
-#         print("="*80)
-    
-#     def resolver(self, time_limit: int = 600, mip_gap: float = 0.01, log_output: bool = True):
-#         """Resolve o modelo MILP"""
-#         if self.modelo is None:
-#             self.construir_modelo()
-        
-#         print("\n" + "="*80)
-#         print("🚀 RESOLVENDO MODELO FCSA MILP")
-#         print("="*80)
-#         print(f"⏱️  Limite de tempo: {time_limit}s")
-#         print(f"🎯 Gap MIP: {mip_gap*100}%")
-#         print("="*80)
-        
-#         # Configurar parâmetros do solver
-#         self.modelo.parameters.mip.tolerances.mipgap = mip_gap
-#         self.modelo.parameters.timelimit = time_limit
-#         self.modelo.parameters.threads = 0  # Usar todos os threads disponíveis
-        
-#         # Resolver
-#         inicio = time.time()
-#         solucao = self.modelo.solve(log_output=log_output)
-#         self.tempo_solucao = time.time() - inicio
-        
-#         if solucao:
-#             self.gap_otimalidade = self.modelo.solve_details.mip_relative_gap * 100
-#             print("\n" + "="*80)
-#             print("✅ SOLUÇÃO ENCONTRADA")
-#             print("="*80)
-#             print(f"⏱️  Tempo: {self.tempo_solucao:.2f}s")
-#             print(f"🎯 Gap: {self.gap_otimalidade:.2f}%")
-#             print(f"📊 Valor objetivo: R$ {self.modelo.objective_value:,.2f}")
-#             print("="*80)
-            
-#             self._extrair_resultados()
-#             return True
-#         else:
-#             print("\n" + "="*80)
-#             print("❌ MODELO INFACTÍVEL OU SEM SOLUÇÃO")
-#             print("="*80)
-#             print(f"⏱️  Tempo decorrido: {self.tempo_solucao:.2f}s")
-#             print("="*80)
-#             return False
-    
-#     def _extrair_resultados(self):
-#         """Extrai resultados da solução"""
-#         x = self._vars['x']
-#         w = self._vars['w']
-#         E = self._vars['E']
-#         E_nm = self._vars['E_nm']
-        
-#         # Estações instaladas
-#         self.estacoes_instaladas = [l for l in self.L if x[l].solution_value > 0.5]
-        
-#         # Carports instalados
-#         self.carports_instalados = {}
-#         for l in self.estacoes_instaladas:
-#             for k in self.K:
-#                 if w[(l, k)].solution_value > 0.5:
-#                     self.carports_instalados[l] = k
-#                     break
-        
-#         # Custos de investimento
-#         self.custo_investimento = sum(
-#             self.c_CS[l] for l in self.estacoes_instaladas
-#         ) + sum(
-#             self.c_PV[k] for l, k in self.carports_instalados.items()
-#         )
-        
-#         # Custos de operação (valor presente)
-#         custo_energia_anual = sum(
-#             self.c_e[t] * E[(l, t)].solution_value
-#             for l in self.estacoes_instaladas
-#             for t in self.T
-#         )
-#         self.custo_operacao_vp = self.fator_vp * custo_energia_anual
-        
-#         # Benefícios de transporte
-#         self.beneficio_transporte = sum(
-#             self.rho[l] * self.beta[l]
-#             for l in self.estacoes_instaladas
-#         )
-        
-#         # Valor objetivo
-#         self.valor_objetivo = self.modelo.objective_value
-    
-#     def obter_resumo(self) -> Dict:
-#         """Retorna resumo dos resultados"""
-#         return {
-#             'estacoes_instaladas': len(self.estacoes_instaladas),
-#             'localizacoes': self.estacoes_instaladas,
-#             'carports_instalados': self.carports_instalados,
-#             'custo_investimento': self.custo_investimento,
-#             'custo_operacao_vp': self.custo_operacao_vp,
-#             'beneficio_transporte': self.beneficio_transporte,
-#             'valor_objetivo': self.valor_objetivo,
-#             'tempo_solucao': self.tempo_solucao,
-#             'gap_otimalidade': self.gap_otimalidade
-#         }
-    
-#     def imprimir_resultados(self):
-#         """Imprime resultados detalhados"""
-#         print("\n" + "="*80)
-#         print("📊 RESULTADOS FINAIS - MODELO FCSA MILP")
-#         print("="*80)
-        
-#         print(f"\n🏗️  INVESTIMENTO:")
-#         print(f"   ⚡ Estações instaladas: {len(self.estacoes_instaladas)}")
-#         print(f"   ☀️  Carports PV instalados: {len(self.carports_instalados)}")
-#         print(f"   💰 Custo total de investimento: R$ {self.custo_investimento:,.2f}")
-        
-#         print(f"\n💡 OPERAÇÃO:")
-#         print(f"   💰 Custo de operação (VP {self.Delta_h} anos): R$ {self.custo_operacao_vp:,.2f}")
-        
-#         print(f"\n🚗 TRANSPORTE:")
-#         print(f"   📊 Benefício de transporte: {self.beneficio_transporte:.2f}")
-#         print(f"   ⚖️  Peso γ: {self.gamma}")
-        
-#         print(f"\n🎯 OTIMIZAÇÃO:")
-#         print(f"   💰 Valor objetivo total: R$ {self.valor_objetivo:,.2f}")
-#         print(f"   ⏱️  Tempo de solução: {self.tempo_solucao:.2f}s")
-#         print(f"   🎯 Gap de otimalidade: {self.gap_otimalidade:.2f}%")
-        
-#         print(f"\n📍 DETALHES DAS ESTAÇÕES:")
-#         for l in self.estacoes_instaladas:
-#             tipo_pv = self.carports_instalados.get(l, None)
-#             if tipo_pv is not None:
-#                 potencia = self.P_k[tipo_pv]
-#                 print(f"   Link {l}: Estação + Carport PV Tipo {tipo_pv} ({potencia} kW)")
-#             else:
-#                 print(f"   Link {l}: Estação (sem carport PV)")
-        
-#         print("\n" + "="*80)
-
-
-
-
-
-
-
-
-
-
 """
-Modelo FCSA (Fast Charging Station Allocation) - MILP Linearizado
-Artículo 1: Modelo MINLP convertido a MILP usando linearización manuscrita
-Basado en la tesis de Caio dos Santos (Unicamp, 2021)
-
-VERSIÓN v7 - BALANCE ENERGÉTICO CORREGIDO:
-- Balance energético CORRECTO: E^pv + E^-nm + E = E^d_eff + E^+nm
-- E (compra) ahora está del lado izquierdo (ENTRADAS)
-- Net-metering completo con créditos acumulativos
+Modelo FCSA MILP - Versão Compacta e Modular
+Baseado na tese de Caio dos Santos (Unicamp, 2021)
+Autor: Carlos Murgueitio
+Data: 2025-01-15
 """
 
-import numpy as np
+import pandas as pd
+import yaml
+from pathlib import Path
 from docplex.mp.model import Model
 import time
-from typing import List, Dict, Optional
+from typing import Dict, Tuple
 
-class ModeloFCSA_MILP:
-    def __init__(self,
-                 L: List[int],
-                 T: List[int],
-                 K: List[int],
-                 parametros: Dict):
+
+class FCSA_MILP:
+    """Modelo FCSA MILP para alocação de estações de recarga rápida com PV"""
+    
+    def __init__(self, pasta_problema: str):
         """
-        Inicializa o modelo FCSA MILP linearizado
+        Inicializa modelo carregando dados da pasta do problema
         
         Args:
-            L: Lista de IDs de links (aristas da rede)
-            T: Lista de períodos de tempo (0, 1, ..., 23 para horas)
-            K: Lista de tipos de carport PV (0, 1, 2, ...)
-            parametros: Dicionário completo de parâmetros
+            pasta_problema: Caminho para pasta com arquivos do problema
+                           Ex: 'dados/problema0'
         """
-        self.L = L
-        self.T = T
-        self.K = K
-        self.params = parametros
-        
-        # Extrair parâmetros
-        self.c_CS = parametros['c_CS_l']
-        self.c_PV = parametros['c_PV_k']
-        self.c_e = parametros['c_e_t']
-        self.P_k = parametros['P_k']
-        self.sh = parametros['sh_lt']
-        self.a_k = parametros['a_k']
-        self.cp = parametros['cp_l']
-        self.a = parametros.get('a', 1.0)
-        self.E_d = parametros['E_d_lt']
-        self.rho = parametros['rho_l']
-        self.beta = parametros['beta_l']
-        self.alpha = parametros['alpha']
-        self.Delta_h = parametros['Delta_h']
-        self.h = parametros.get('h', 1)
-        self.gamma = parametros['gamma']
-        self.min_estacoes = parametros.get('min_estacoes', 1)
-        
-        # Calcular BIG_M
-        if parametros.get('BIG_M') is None:
-            self.BIG_M = self._calcular_big_m()
-        else:
-            self.BIG_M = parametros['BIG_M']
-        
-        # Calcular fator de valor presente
-        self.fator_vp = self._calcular_fator_valor_presente()
-        
-        # Resultados
+        self.pasta = Path(pasta_problema)
+        self._carregar_dados()
+        self._calcular_parametros_derivados()
         self.modelo = None
-        self.estacoes_instaladas = []
-        self.carports_instalados = {}
-        self.custo_investimento = 0
-        self.custo_operacao_vp = 0
-        self.beneficio_transporte = 0
-        self.valor_objetivo = 0
-        self.tempo_solucao = 0
-        self.gap_otimalidade = 0
-    
-    def _calcular_big_m(self) -> float:
-        """Calcula Big-M adequado para linearização"""
-        max_geracao_pv = max(
-            self.P_k[k] * self.sh.get((l, t), 0)
-            for l in self.L
-            for t in self.T
-            for k in self.K
-        )
-        max_demanda = max(self.E_d.values()) if self.E_d else 1000
+        self.solucao = {}
         
-        # Big-M deve cobrir o máximo entre geração e demanda
-        return max(max_geracao_pv, max_demanda) * 1.5
-    
-    def _calcular_fator_valor_presente(self) -> float:
-        """
-        Calcula fator de conversão a valor presente:
-        fator = [(1+α)^Δh - 1] / [α · (1+α)^h · (1+α)^Δh]
-        """
-        alpha = self.alpha
-        Delta_h = self.Delta_h
-        h = self.h
+    def _carregar_dados(self):
+        """Carrega todos os arquivos de dados"""
+        # Config geral
+        with open(self.pasta / 'config_geral.yaml', 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
         
-        numerador = (1 + alpha)**Delta_h - 1
-        denominador = alpha * (1 + alpha)**h * (1 + alpha)**Delta_h
+        self.alpha = config['parametros_financeiros']['alpha']
+        self.Delta_h = config['parametros_financeiros']['Delta_h']
+        self.h = config['parametros_financeiros']['h']
+        self.gamma = config['parametros_otimizacao']['gamma']
+        self.min_estacoes = config['parametros_otimizacao']['min_estacoes']
+        self.a = config['parametros_area']['a']
+        self.time_limit = config['solver']['time_limit']
+        self.mip_gap = config['solver']['mip_gap']
+        self.log_output = config['solver']['log_output']
         
-        return numerador / denominador
-    
-    def construir_modelo(self):
-        """Constrói o modelo MILP linearizado com net-metering"""
-        print("\n" + "="*80)
-        print("🔧 CONSTRUINDO MODELO FCSA MILP (v7 - BALANCE CORRIGIDO)")
-        print("="*80)
-        print(f"📊 Links: {len(self.L)} | Períodos: {len(self.T)} | Tipos PV: {len(self.K)}")
-        print(f"💰 Horizonte: {self.Delta_h} anos | Taxa: {self.alpha*100:.1f}%")
-        print(f"🔢 Big-M: {self.BIG_M:.2f} | Fator VP: {self.fator_vp:.4f}")
-        print(f"🎯 γ (transporte): {self.gamma} | Mín. estações: {self.min_estacoes}")
-        print("="*80)
+        # CSVs
+        links = pd.read_csv(self.pasta / 'links.csv')
+        custos_est = pd.read_csv(self.pasta / 'custos_estacoes.csv')
+        custos_pv = pd.read_csv(self.pasta / 'custos_carports_pv.csv')
+        tarifas = pd.read_csv(self.pasta / 'tarifas_energia.csv')
+        demanda = pd.read_csv(self.pasta / 'demanda_energia.csv')
+        irradiacao = pd.read_csv(self.pasta / 'irradiacao_solar.csv')
+        transporte = pd.read_csv(self.pasta / 'parametros_transporte.csv')
+        areas = pd.read_csv(self.pasta / 'areas_disponiveis.csv')
         
-        self.modelo = Model('FCSA_MILP_v7')
+        # Conjuntos
+        self.L = links['link_id'].tolist()
+        self.T = list(range(24))
+        self.K = custos_pv['tipo_pv'].tolist()
         
-        # ==================== VARIÁVEIS DE DECISÃO ====================
-        print("\n📝 Criando variáveis de decisão...")
+        # Parâmetros em dicionários
+        self.c_CS = custos_est.set_index('link_id')['custo_instalacao_reais'].to_dict()
+        self.c_PV = custos_pv.set_index('tipo_pv')['custo_instalacao_reais'].to_dict()
+        self.P_k = custos_pv.set_index('tipo_pv')['potencia_kw'].to_dict()
+        self.a_k = custos_pv.set_index('tipo_pv')['area_m2'].to_dict()
+        self.c_e = tarifas.set_index('periodo')['tarifa_reais_kwh'].to_dict()
+        self.cp = areas.set_index('link_id')['area_disponivel_m2'].to_dict()
+        self.rho = transporte.set_index('link_id')['fluxo_agregado_veiculos_dia'].to_dict()
+        self.beta = transporte.set_index('link_id')['fator_beneficio'].to_dict()
         
-        # x_l: Instalar estação no link l
-        x = self.modelo.binary_var_dict(self.L, name='x')
-        print(f"   ✓ x_l: {len(self.L)} variáveis binárias (instalação)")
+        # Parâmetros indexados (l,t)
+        self.E_d = demanda.set_index(['link_id', 'periodo'])['demanda_kwh'].to_dict()
+        self.sh = irradiacao.set_index(['link_id', 'periodo'])['irradiacao_normalizada'].to_dict()
         
-        # w_{l,k}: Instalar carport PV tipo k no link l
-        w = {}
-        for l in self.L:
-            for k in self.K:
-                w[(l, k)] = self.modelo.binary_var(name=f'w_{l}_{k}')
-        print(f"   ✓ w_lk: {len(self.L)*len(self.K)} variáveis binárias (carport PV)")
+        # Guardar DataFrames para geolocalização
+        self.df_links = links
         
-        # E_{l,t}: Energia COMPRADA da rede
-        E = self.modelo.continuous_var_dict(
-            [(l, t) for l in self.L for t in self.T],
-            lb=0,
-            name='E'
-        )
+    def _calcular_parametros_derivados(self):
+        """Calcula Big-M e fator de valor presente"""
+        # Big-M
+        max_pv = max(self.P_k[k] * self.sh.get((l, t), 0) 
+                     for l in self.L for t in self.T for k in self.K)
+        max_dem = max(self.E_d.values())
+        self.BIG_M = max(max_pv, max_dem) * 1.5
         
-        # E^{pv}_{l,t}: Geração PV
-        E_pv = self.modelo.continuous_var_dict(
-            [(l, t) for l in self.L for t in self.T],
-            lb=0,
-            name='E_pv'
-        )
+        # Fator valor presente
+        num = (1 + self.alpha)**self.Delta_h - 1
+        den = self.alpha * (1 + self.alpha)**self.h * (1 + self.alpha)**self.Delta_h
+        self.fator_vp = num / den
         
-        # E^{-nm}_{l,t}: Energia importada (usando créditos)
-        E_minus_nm = self.modelo.continuous_var_dict(
-            [(l, t) for l in self.L for t in self.T],
-            lb=0,
-            name='E_minus_nm'
-        )
+    def construir(self):
+        """Constrói modelo MILP"""
+        print(f"\n{'='*80}\n🔧 CONSTRUINDO MODELO FCSA MILP\n{'='*80}")
+        print(f"📊 L={len(self.L)} | T={len(self.T)} | K={len(self.K)} | "
+              f"γ={self.gamma} | α={self.alpha*100:.0f}%")
         
-        # E^{+nm}_{l,t}: Energia exportada (gerando créditos)
-        E_plus_nm = self.modelo.continuous_var_dict(
-            [(l, t) for l in self.L for t in self.T],
-            lb=0,
-            name='E_plus_nm'
-        )
+        m = Model('FCSA_MILP')
         
-        # E^{lot}_{l,t}: Energia excedente disponível para exportação
-        E_lot = self.modelo.continuous_var_dict(
-            [(l, t) for l in self.L for t in self.T],
-            lb=0,
-            name='E_lot'
-        )
+        # === VARIÁVEIS ===
+        x = m.binary_var_dict(self.L, name='x')  # Instalar estação
+        w = {(l,k): m.binary_var(name=f'w_{l}_{k}') for l in self.L for k in self.K}
+        E = m.continuous_var_dict([(l,t) for l in self.L for t in self.T], lb=0, name='E')
+        E_pv = m.continuous_var_dict([(l,t) for l in self.L for t in self.T], lb=0, name='E_pv')
+        E_minus_nm = m.continuous_var_dict([(l,t) for l in self.L for t in self.T], lb=0, name='E_minus_nm')
+        E_plus_nm = m.continuous_var_dict([(l,t) for l in self.L for t in self.T], lb=0, name='E_plus_nm')
+        E_lot = m.continuous_var_dict([(l,t) for l in self.L for t in self.T], lb=0, name='E_lot')
+        E_nm = m.continuous_var_dict(self.T, lb=0, name='E_nm')
+        E_d_eff = m.continuous_var_dict([(l,t) for l in self.L for t in self.T], lb=0, name='E_d_eff')
+        x_aux = m.binary_var_dict([(l,t) for l in self.L for t in self.T], name='x_aux')
         
-        # E^{nm}_t: Créditos acumulados disponíveis no período t
-        E_nm = self.modelo.continuous_var_dict(self.T, lb=0, name='E_nm')
+        print(f"✅ Variáveis: {m.number_of_variables}")
         
-        print(f"   ✓ Variáveis energéticas: {6*len(self.L)*len(self.T) + len(self.T)} contínuas")
+        # === FUNÇÃO OBJETIVO ===
+        C_in = m.sum(self.c_CS[l]*x[l] for l in self.L) + \
+               m.sum(self.c_PV[k]*w[l,k] for l in self.L for k in self.K)
+        C_op = self.fator_vp * m.sum(self.c_e[t]*E[l,t] for l in self.L for t in self.T)
+        f_trans = self.gamma * m.sum(x[l]*self.rho[l]*self.beta[l] for l in self.L)
+        m.minimize(C_in + C_op - f_trans)
         
-        # E_d_eff_{l,t}: Demanda efetiva = x_l * E_d_{l,t}
-        E_d_eff = self.modelo.continuous_var_dict(
-            [(l, t) for l in self.L for t in self.T],
-            lb=0,
-            name='E_d_eff'
-        )
-        
-        # x_aux_{l,t}: Variável auxiliar para linearização de max{0, E_pv - E_d_eff}
-        x_aux = self.modelo.binary_var_dict(
-            [(l, t) for l in self.L for t in self.T],
-            name='x_aux'
-        )
-        print(f"   ✓ Variáveis auxiliares: {len(self.L)*len(self.T)} contínuas + {len(self.L)*len(self.T)} binárias")
-        
-        total_vars = self.modelo.number_of_variables
-        print(f"\n✅ Total de variáveis: {total_vars}")
-        
-        # ==================== FUNÇÃO OBJETIVO (3) ====================
-        print("\n🎯 Construindo função objetivo (3 componentes)...")
-        
-        # C_in: Custos de investimento (estações + carports)
-        C_in = self.modelo.sum(
-            self.c_CS[l] * x[l] for l in self.L
-        ) + self.modelo.sum(
-            self.c_PV[k] * w[(l, k)]
-            for l in self.L
-            for k in self.K
-        )
-        print(f"   ✓ C_in: Custos de investimento")
-        
-        # C_op: Custos de operação (energia comprada da rede)
-        C_op = self.fator_vp * self.modelo.sum(
-            self.c_e[t] * E[(l, t)]
-            for l in self.L
-            for t in self.T
-        )
-        print(f"   ✓ C_op: Custos operacionais (VP {self.Delta_h} anos)")
-        
-        # f: Benefícios de transporte
-        f_transporte = self.gamma * self.modelo.sum(
-            x[l] * self.rho[l] * self.beta[l]
-            for l in self.L
-        )
-        print(f"   ✓ f: Benefícios de transporte (γ={self.gamma})")
-        
-        # Minimizar: custos - benefícios
-        self.modelo.minimize(C_in + C_op - f_transporte)
-        print(f"\n🎯 FO: min [C_in + C_op - γ·Σ(x_l·ρ_l·β_l)]")
-        
-        # ==================== RESTRIÇÕES ====================
-        print("\n⚙️  Adicionando restrições...")
-        
+        # === RESTRIÇÕES ===
         # (0) Cobertura mínima
-        self.modelo.add_constraint(
-            self.modelo.sum(x[l] for l in self.L) >= self.min_estacoes,
-            ctname='cobertura_minima'
-        )
-        print(f"   ✓ (0) Cobertura mínima: >= {self.min_estacoes} estação")
+        m.add_constraint(m.sum(x[l] for l in self.L) >= self.min_estacoes)
         
-        # (1) Linearização: E_d_eff = x_l * E_d_lt
-        E_d_max = max(self.E_d.values()) if self.E_d else 1000
+        # (1) Linearização demanda efetiva: E_d_eff = x_l * E_d
+        E_d_max = max(self.E_d.values())
         for l in self.L:
             for t in self.T:
-                E_d_lt = self.E_d.get((l, t), 0)
-                
-                # E_d_eff ≤ E_d_max * x_l
-                self.modelo.add_constraint(
-                    E_d_eff[(l, t)] <= E_d_max * x[l],
-                    ctname=f'demanda_ub1_{l}_{t}'
-                )
-                
-                # E_d_eff ≤ E_d_lt
-                self.modelo.add_constraint(
-                    E_d_eff[(l, t)] <= E_d_lt,
-                    ctname=f'demanda_ub2_{l}_{t}'
-                )
-                
-                # E_d_eff ≥ E_d_lt - E_d_max * (1 - x_l)
-                self.modelo.add_constraint(
-                    E_d_eff[(l, t)] >= E_d_lt - E_d_max * (1 - x[l]),
-                    ctname=f'demanda_lb_{l}_{t}'
-                )
-        print(f"   ✓ (1) Linearização E_d_eff = x_l * E_d: {3*len(self.L)*len(self.T)} restrições")
+                Ed = self.E_d.get((l,t), 0)
+                m.add_constraint(E_d_eff[l,t] <= E_d_max * x[l])
+                m.add_constraint(E_d_eff[l,t] <= Ed)
+                m.add_constraint(E_d_eff[l,t] >= Ed - E_d_max*(1-x[l]))
         
-        # ✓✓✓ (4) BALANCE ENERGÉTICO CORRECTO - v7 ✓✓✓
-        # ENTRADAS = SALIDAS
-        # E^pv + E^-nm + E = E^d_eff + E^+nm
-        # (PV + Créditos usados + Compra) = (Demanda + Exportação)
+        # (4) Balanço energético: E_pv + E_minus_nm + E = E_d_eff + E_plus_nm
         for l in self.L:
             for t in self.T:
-                self.modelo.add_constraint(
-                    E_pv[(l, t)] + E_minus_nm[(l, t)] + E[(l, t)]
-                    == E_d_eff[(l, t)] + E_plus_nm[(l, t)],
-                    ctname=f'balance_energia_{l}_{t}'
-                )
-        print(f"   ✓ (4) Balance energético: E^pv + E^-nm + E = E^d + E^+nm: {len(self.L)*len(self.T)} restrições")
+                m.add_constraint(E_pv[l,t] + E_minus_nm[l,t] + E[l,t] == 
+                                E_d_eff[l,t] + E_plus_nm[l,t])
         
-        # (5) Geração PV: E^pv = Σ_k P_k · sh · w_k
+        # (5) Geração PV
         for l in self.L:
             for t in self.T:
-                self.modelo.add_constraint(
-                    E_pv[(l, t)] == self.modelo.sum(
-                        self.P_k[k] * self.sh.get((l, t), 0) * w[(l, k)]
-                        for k in self.K
-                    ),
-                    ctname=f'geracao_pv_{l}_{t}'
-                )
-        print(f"   ✓ (5) Geração PV: {len(self.L)*len(self.T)} restrições")
+                m.add_constraint(E_pv[l,t] == m.sum(self.P_k[k]*self.sh.get((l,t),0)*w[l,k] 
+                                                     for k in self.K))
         
-        # (6) Limite de importação: E^-nm ≤ E^nm do período anterior
+        # (6) Limite importação net-metering
         for l in self.L:
             for idx, t in enumerate(self.T):
                 if idx > 0:
-                    t_anterior = self.T[idx - 1]
-                    self.modelo.add_constraint(
-                        E_minus_nm[(l, t)] <= E_nm[t_anterior],
-                        ctname=f'limite_importacao_{l}_{t}'
-                    )
+                    m.add_constraint(E_minus_nm[l,t] <= E_nm[self.T[idx-1]])
                 else:
-                    # No período inicial, não há créditos disponíveis
-                    self.modelo.add_constraint(
-                        E_minus_nm[(l, t)] == 0,
-                        ctname=f'sem_creditos_iniciais_{l}_{t}'
-                    )
-        print(f"   ✓ (6) Limite de importação: {len(self.L)*len(self.T)} restrições")
+                    m.add_constraint(E_minus_nm[l,t] == 0)
         
-        # (7) BALANCE ACUMULATIVO DE CRÉDITOS
-        # E^nm_t = E^nm_{t-1} + Σ_l (E^+nm_{l,t} - E^-nm_{l,t})
+        # (7) Balanço acumulativo créditos
         for idx, t in enumerate(self.T):
             if idx == 0:
-                # Período inicial: créditos = exportação - importação
-                self.modelo.add_constraint(
-                    E_nm[t] == self.modelo.sum(
-                        E_plus_nm[(l, t)] - E_minus_nm[(l, t)]
-                        for l in self.L
-                    ),
-                    ctname=f'balance_nm_inicial_{t}'
-                )
+                m.add_constraint(E_nm[t] == m.sum(E_plus_nm[l,t] - E_minus_nm[l,t] for l in self.L))
             else:
-                # Períodos seguintes: acumula créditos
-                t_anterior = self.T[idx - 1]
-                self.modelo.add_constraint(
-                    E_nm[t] == E_nm[t_anterior] + self.modelo.sum(
-                        E_plus_nm[(l, t)] - E_minus_nm[(l, t)]
-                        for l in self.L
-                    ),
-                    ctname=f'balance_nm_acumulativo_{t}'
-                )
-        print(f"   ✓ (7) Balance acumulativo net-metering: {len(self.T)} restrições")
+                m.add_constraint(E_nm[t] == E_nm[self.T[idx-1]] + 
+                                m.sum(E_plus_nm[l,t] - E_minus_nm[l,t] for l in self.L))
         
-        # (8) LINEARIZAÇÃO: E^lot = max{0, E^pv - E_d_eff}
-        print(f"\n   🔧 Aplicando linearização manuscrita (Big-M)...")
-        
+        # (8) Linearização E_lot = max{0, E_pv - E_d_eff}
         for l in self.L:
             for t in self.T:
-                # (L2) E^lot ≥ E^pv - E_d_eff
-                self.modelo.add_constraint(
-                    E_lot[(l, t)] >= E_pv[(l, t)] - E_d_eff[(l, t)],
-                    ctname=f'lin_L2_{l}_{t}'
-                )
-                
-                # (L3) E^lot ≤ BIG_M · x_aux
-                self.modelo.add_constraint(
-                    E_lot[(l, t)] <= self.BIG_M * x_aux[(l, t)],
-                    ctname=f'lin_L3_{l}_{t}'
-                )
-                
-                # (L4) E^lot ≤ (E^pv - E_d_eff) + BIG_M · (1 - x_aux)
-                self.modelo.add_constraint(
-                    E_lot[(l, t)] <= (E_pv[(l, t)] - E_d_eff[(l, t)]) + self.BIG_M * (1 - x_aux[(l, t)]),
-                    ctname=f'lin_L4_{l}_{t}'
-                )
+                m.add_constraint(E_lot[l,t] >= E_pv[l,t] - E_d_eff[l,t])
+                m.add_constraint(E_lot[l,t] <= self.BIG_M * x_aux[l,t])
+                m.add_constraint(E_lot[l,t] <= E_pv[l,t] - E_d_eff[l,t] + self.BIG_M*(1-x_aux[l,t]))
         
-        print(f"   ✓ (8-Lin) Linearização max{{0, E^pv - E_d_eff}}: {3*len(self.L)*len(self.T)} restrições")
-        
-        # (9) Limite de exportação: E^+nm ≤ E^lot
+        # (9) Limite exportação
         for l in self.L:
             for t in self.T:
-                self.modelo.add_constraint(
-                    E_plus_nm[(l, t)] <= E_lot[(l, t)],
-                    ctname=f'limite_exportacao_{l}_{t}'
-                )
-        print(f"   ✓ (9) Limite de exportação: {len(self.L)*len(self.T)} restrições")
+                m.add_constraint(E_plus_nm[l,t] <= E_lot[l,t])
         
-        # (10) Restrição de área do carport
+        # (10) Área carport
         for l in self.L:
-            self.modelo.add_constraint(
-                self.modelo.sum(
-                    self.a_k[k] * w[(l, k)]
-                    for k in self.K
-                ) <= self.cp[l] * self.a,
-                ctname=f'area_carport_{l}'
-            )
-        print(f"   ✓ (10) Área de carport: {len(self.L)} restrições")
+            m.add_constraint(m.sum(self.a_k[k]*w[l,k] for k in self.K) <= self.cp[l]*self.a)
         
         # (11) Carport requer estação
         for l in self.L:
-            self.modelo.add_constraint(
-                self.modelo.sum(w[(l, k)] for k in self.K) <= x[l],
-                ctname=f'carport_requer_estacao_{l}'
-            )
-        print(f"   ✓ (11) Carport requer estação: {len(self.L)} restrições")
+            m.add_constraint(m.sum(w[l,k] for k in self.K) <= x[l])
         
-        total_restricoes = self.modelo.number_of_constraints
-        print(f"\n✅ Total de restrições: {total_restricoes}")
+        print(f"✅ Restrições: {m.number_of_constraints}\n{'='*80}")
         
-        # Salvar variáveis
-        self._vars = {
-            'x': x,
-            'w': w,
-            'E': E,
-            'E_pv': E_pv,
-            'E_minus_nm': E_minus_nm,
-            'E_plus_nm': E_plus_nm,
-            'E_lot': E_lot,
-            'E_nm': E_nm,
-            'E_d_eff': E_d_eff,
-            'x_aux': x_aux
-        }
+        self.modelo = m
+        self._vars = {'x': x, 'w': w, 'E': E, 'E_pv': E_pv, 'E_minus_nm': E_minus_nm,
+                      'E_plus_nm': E_plus_nm, 'E_nm': E_nm}
         
-        print("\n" + "="*80)
-        print(f"✅ MODELO CONSTRUÍDO (v7 - BALANCE ENERGÉTICO CORRIGIDO)")
-        print(f"📊 Variáveis: {total_vars} | Restrições: {total_restricoes}")
-        print(f"🔋 Net-metering completo + Balance corrigido")
-        print("="*80)
-    
-    def resolver(self, time_limit: int = 600, mip_gap: float = 0.01, log_output: bool = True):
-        """Resolve o modelo MILP"""
-        if self.modelo is None:
-            self.construir_modelo()
+    def resolver(self):
+        """Resolve modelo"""
+        if not self.modelo:
+            self.construir()
+            
+        print(f"\n{'='*80}\n🚀 RESOLVENDO\n{'='*80}")
+        print(f"⏱️  Limite: {self.time_limit}s | Gap: {self.mip_gap*100}%\n{'='*80}")
         
-        print("\n" + "="*80)
-        print("🚀 RESOLVENDO MODELO FCSA MILP COM NET-METERING")
-        print("="*80)
-        print(f"⏱️  Limite: {time_limit}s | Gap: {mip_gap*100}%")
-        print("="*80)
-        
-        self.modelo.parameters.mip.tolerances.mipgap = mip_gap
-        self.modelo.parameters.timelimit = time_limit
+        self.modelo.parameters.mip.tolerances.mipgap = self.mip_gap
+        self.modelo.parameters.timelimit = self.time_limit
         self.modelo.parameters.threads = 0
         
-        inicio = time.time()
-        solucao = self.modelo.solve(log_output=log_output)
-        self.tempo_solucao = time.time() - inicio
+        t0 = time.time()
+        sol = self.modelo.solve(log_output=self.log_output)
+        tempo = time.time() - t0
         
-        if solucao:
-            self.gap_otimalidade = self.modelo.solve_details.mip_relative_gap * 100
-            print("\n" + "="*80)
-            print("✅ SOLUÇÃO ENCONTRADA")
-            print("="*80)
-            print(f"⏱️  Tempo: {self.tempo_solucao:.2f}s")
-            print(f"🎯 Gap: {self.gap_otimalidade:.2f}%")
-            print(f"📊 Valor objetivo: R$ {self.modelo.objective_value:,.2f}")
-            print("="*80)
-            
-            self._extrair_resultados()
+        if sol:
+            self._extrair_solucao(tempo)
+            self._imprimir_resultados()
             return True
         else:
-            print("\n" + "="*80)
-            print("❌ MODELO INFACTÍVEL OU SEM SOLUÇÃO")
-            print("="*80)
-            print(f"⏱️  Tempo: {self.tempo_solucao:.2f}s")
-            print("="*80)
+            print(f"\n{'='*80}\n❌ MODELO INFACTÍVEL\n{'='*80}")
             return False
     
-    def _extrair_resultados(self):
-        """Extrai resultados da solução"""
+    def _extrair_solucao(self, tempo: float):
+        """Extrai solução"""
         x = self._vars['x']
         w = self._vars['w']
         E = self._vars['E']
@@ -957,141 +221,82 @@ class ModeloFCSA_MILP:
         E_plus_nm = self._vars['E_plus_nm']
         E_minus_nm = self._vars['E_minus_nm']
         
-        # Estações instaladas
-        self.estacoes_instaladas = [l for l in self.L if x[l].solution_value > 0.5]
+        est = [l for l in self.L if x[l].solution_value > 0.5]
+        cp_inst = {l: k for l in est for k in self.K if w[l,k].solution_value > 0.5}
         
-        # Carports instalados
-        self.carports_instalados = {}
-        for l in self.estacoes_instaladas:
-            for k in self.K:
-                if w[(l, k)].solution_value > 0.5:
-                    self.carports_instalados[l] = k
-                    break
-        
-        # Custos de investimento
-        self.custo_investimento = sum(
-            self.c_CS[l] for l in self.estacoes_instaladas
-        ) + sum(
-            self.c_PV[k] for l, k in self.carports_instalados.items()
-        )
-        
-        # Custos de operação (energia comprada)
-        custo_energia_anual = sum(
-            self.c_e[t] * E[(l, t)].solution_value
-            for l in self.estacoes_instaladas
-            for t in self.T
-        )
-        self.custo_operacao_vp = self.fator_vp * custo_energia_anual
-        
-        # Benefícios de transporte
-        self.beneficio_transporte = sum(
-            self.rho[l] * self.beta[l]
-            for l in self.estacoes_instaladas
-        )
-        
-        # Valor objetivo
-        self.valor_objetivo = self.modelo.objective_value
-        
-        # Estatísticas de energia
-        self.energia_total_comprada = sum(
-            E[(l, t)].solution_value
-            for l in self.estacoes_instaladas
-            for t in self.T
-        )
-        
-        self.energia_total_gerada_pv = sum(
-            E_pv[(l, t)].solution_value
-            for l in self.estacoes_instaladas
-            for t in self.T
-        )
-        
-        self.energia_exportada_total = sum(
-            E_plus_nm[(l, t)].solution_value
-            for l in self.estacoes_instaladas
-            for t in self.T
-        )
-        
-        self.energia_importada_total = sum(
-            E_minus_nm[(l, t)].solution_value
-            for l in self.estacoes_instaladas
-            for t in self.T
-        )
-        
-        self.creditos_finais = E_nm[self.T[-1]].solution_value if self.T else 0
-    
-    def obter_resumo(self) -> Dict:
-        """Retorna resumo dos resultados"""
-        return {
-            'estacoes_instaladas': len(self.estacoes_instaladas),
-            'localizacoes': self.estacoes_instaladas,
-            'carports_instalados': self.carports_instalados,
-            'custo_investimento': self.custo_investimento,
-            'custo_operacao_vp': self.custo_operacao_vp,
-            'beneficio_transporte': self.beneficio_transporte,
-            'valor_objetivo': self.valor_objetivo,
-            'tempo_solucao': self.tempo_solucao,
-            'gap_otimalidade': self.gap_otimalidade,
-            'energia_comprada': getattr(self, 'energia_total_comprada', 0),
-            'energia_gerada_pv': getattr(self, 'energia_total_gerada_pv', 0),
-            'energia_exportada': getattr(self, 'energia_exportada_total', 0),
-            'energia_importada': getattr(self, 'energia_importada_total', 0),
-            'creditos_finais': getattr(self, 'creditos_finais', 0)
+        self.solucao = {
+            'tempo_s': tempo,
+            'gap_%': self.modelo.solve_details.mip_relative_gap * 100,
+            'valor_objetivo': self.modelo.objective_value,
+            'estacoes_instaladas': est,
+            'num_estacoes': len(est),
+            'carports_instalados': cp_inst,
+            'custo_investimento': sum(self.c_CS[l] for l in est) + 
+                                 sum(self.c_PV[k] for k in cp_inst.values()),
+            'custo_operacao_vp': self.fator_vp * sum(self.c_e[t]*E[l,t].solution_value 
+                                                     for l in est for t in self.T),
+            'beneficio_transporte': sum(self.rho[l]*self.beta[l] for l in est),
+            'energia_comprada_kwh': sum(E[l,t].solution_value for l in est for t in self.T),
+            'energia_pv_kwh': sum(E_pv[l,t].solution_value for l in est for t in self.T),
+            'energia_exportada_kwh': sum(E_plus_nm[l,t].solution_value for l in est for t in self.T),
+            'energia_importada_kwh': sum(E_minus_nm[l,t].solution_value for l in est for t in self.T),
+            'creditos_finais_kwh': E_nm[self.T[-1]].solution_value
         }
+        
+    def _imprimir_resultados(self):
+        """Imprime resumo"""
+        s = self.solucao
+        print(f"\n{'='*80}\n✅ SOLUÇÃO ENCONTRADA\n{'='*80}")
+        print(f"⏱️  Tempo: {s['tempo_s']:.2f}s | Gap: {s['gap_%']:.2f}%")
+        print(f"💰 Valor objetivo: R$ {s['valor_objetivo']:,.2f}\n")
+        
+        print(f"🏗️  INVESTIMENTO:")
+        print(f"   ⚡ Estações: {s['num_estacoes']} → {s['estacoes_instaladas']}")
+        print(f"   ☀️  Carports PV: {len(s['carports_instalados'])}")
+        print(f"   💰 Custo: R$ {s['custo_investimento']:,.2f}\n")
+        
+        print(f"💡 OPERAÇÃO ({self.Delta_h} anos):")
+        print(f"   💰 Custo VP: R$ {s['custo_operacao_vp']:,.2f}")
+        print(f"   🔌 Comprada: {s['energia_comprada_kwh']:,.0f} kWh")
+        print(f"   ☀️  Gerada PV: {s['energia_pv_kwh']:,.0f} kWh\n")
+        
+        print(f"🔋 NET-METERING:")
+        print(f"   📤 Exportada: {s['energia_exportada_kwh']:,.0f} kWh")
+        print(f"   📥 Importada: {s['energia_importada_kwh']:,.0f} kWh")
+        print(f"   💾 Créditos finais: {s['creditos_finais_kwh']:,.0f} kWh\n")
+        
+        print(f"🚗 TRANSPORTE:")
+        print(f"   📊 Benefício: {s['beneficio_transporte']:.1f}")
+        print(f"   💡 Contribuição FO: R$ {-self.gamma * s['beneficio_transporte']:,.2f}")
+        print(f"{'='*80}\n")
+        
+        # Detalhes por estação
+        for l in s['estacoes_instaladas']:
+            k = s['carports_instalados'].get(l)
+            print(f"📍 Link {l} ({self.df_links[self.df_links.link_id==l]['nome'].values[0]}):")
+            print(f"   - Estação: R$ {self.c_CS[l]:,.0f}")
+            if k is not None:
+                print(f"   - Carport PV Tipo {k}: {self.P_k[k]} kW (R$ {self.c_PV[k]:,.0f})")
+            print(f"   - Benefício: {self.rho[l]*self.beta[l]:.1f}")
+        print(f"{'='*80}")
+
+
+# === FUNÇÃO PRINCIPAL ===
+def resolver_problema(pasta: str) -> FCSA_MILP:
+    """
+    Resolve problema FCSA MILP completo
     
-    def imprimir_resultados(self):
-        """Imprime resultados detalhados"""
-        print("\n" + "="*80)
-        print("📊 RESULTADOS FINAIS - MODELO FCSA MILP COM NET-METERING")
-        print("="*80)
-        
-        print(f"\n🏗️  INVESTIMENTO:")
-        print(f"   ⚡ Estações instaladas: {len(self.estacoes_instaladas)}")
-        print(f"   📍 Localizações: {self.estacoes_instaladas}")
-        print(f"   ☀️  Carports PV instalados: {len(self.carports_instalados)}")
-        print(f"   💰 Custo total: R$ {self.custo_investimento:,.2f}")
-        
-        print(f"\n💡 OPERAÇÃO:")
-        print(f"   💰 Custo VP ({self.Delta_h} anos): R$ {self.custo_operacao_vp:,.2f}")
-        print(f"   🔌 Energia comprada da rede: {self.energia_total_comprada:,.1f} kWh")
-        print(f"   ☀️  Energia gerada PV: {self.energia_total_gerada_pv:,.1f} kWh")
-        
-        print(f"\n🔋 NET-METERING:")
-        print(f"   📤 Energia exportada (créditos gerados): {self.energia_exportada_total:,.1f} kWh")
-        print(f"   📥 Energia importada (créditos usados): {self.energia_importada_total:,.1f} kWh")
-        print(f"   💾 Créditos finais acumulados: {self.creditos_finais:,.1f} kWh")
-        
-        # Calcular economia com net-metering
-        if self.energia_exportada_total > 0:
-            taxa_aproveitamento = (self.energia_importada_total / self.energia_exportada_total) * 100
-            print(f"   📊 Taxa de aproveitamento: {taxa_aproveitamento:.1f}%")
-        
-        print(f"\n🚗 TRANSPORTE:")
-        print(f"   📊 Benefício total: {self.beneficio_transporte:.2f}")
-        print(f"   ⚖️  Peso γ: {self.gamma}")
-        print(f"   💡 Contribuição FO: R$ {-self.gamma * self.beneficio_transporte:,.2f}")
-        
-        print(f"\n🎯 OTIMIZAÇÃO:")
-        print(f"   💰 Valor objetivo: R$ {self.valor_objetivo:,.2f}")
-        print(f"   ⏱️  Tempo: {self.tempo_solucao:.2f}s")
-        print(f"   🎯 Gap: {self.gap_otimalidade:.2f}%")
-        
-        print(f"\n📍 DETALHES DAS ESTAÇÕES:")
-        for l in self.estacoes_instaladas:
-            tipo_pv = self.carports_instalados.get(l, None)
-            custo_est = self.c_CS[l]
-            beneficio = self.rho[l] * self.beta[l]
-            
-            if tipo_pv is not None:
-                potencia = self.P_k[tipo_pv]
-                custo_pv = self.c_PV[tipo_pv]
-                print(f"   Link {l}:")
-                print(f"      - Estação: R$ {custo_est:,.0f}")
-                print(f"      - Carport PV Tipo {tipo_pv}: {potencia} kW (R$ {custo_pv:,.0f})")
-                print(f"      - Benefício transporte: {beneficio:.1f}")
-                print(f"      - Total: R$ {custo_est + custo_pv:,.0f}")
-            else:
-                print(f"   Link {l}:")
-                print(f"      - Estação: R$ {custo_est:,.0f} (sem PV)")
-                print(f"      - Benefício transporte: {beneficio:.1f}")
-        
-        print("\n" + "="*80)
+    Args:
+        pasta: Caminho para pasta do problema (ex: 'dados/problema0')
+    
+    Returns:
+        Objeto FCSA_MILP com solução
+    """
+    modelo = FCSA_MILP(pasta)
+    modelo.resolver()
+    return modelo
+
+
+if __name__ == '__main__':
+    # Resolver problema 0
+    modelo = resolver_problema('dados/problema0')

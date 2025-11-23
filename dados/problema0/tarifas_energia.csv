@@ -1,0 +1,25 @@
+periodo,tarifa_reais_kwh,descricao
+0,0.45,Fora de pico - madrugada
+1,0.45,Fora de pico - madrugada
+2,0.45,Fora de pico - madrugada
+3,0.45,Fora de pico - madrugada
+4,0.45,Fora de pico - madrugada
+5,0.45,Fora de pico - madrugada
+6,0.45,Fora de pico - manhã
+7,0.45,Fora de pico - manhã
+8,0.45,Fora de pico - manhã
+9,0.45,Fora de pico - manhã
+10,0.45,Fora de pico - meio-dia
+11,0.45,Fora de pico - meio-dia
+12,0.45,Fora de pico - meio-dia
+13,0.45,Fora de pico - tarde
+14,0.45,Fora de pico - tarde
+15,0.45,Fora de pico - tarde
+16,0.45,Fora de pico - tarde
+17,0.85,Pico - tarde/noite
+18,0.85,Pico - noite
+19,0.85,Pico - noite
+20,0.85,Pico - noite
+21,0.85,Pico - noite
+22,0.45,Fora de pico - noite tardia
+23,0.45,Fora de pico - noite tardia
