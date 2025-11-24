@@ -1,6 +1,16 @@
-link_id,custo_instalacao_reais,descricao
-0,180000,Centro principal - infraestrutura complexa
-1,150000,Centro secundário - infraestrutura moderada
-2,130000,Zona comercial - infraestrutura padrão
-3,120000,Zona industrial - infraestrutura básica
-4,110000,Zona residencial - instalação simplificada
+link_id,custo_instalacao_reais,complexidade_infra,observacoes
+0,220000,alta,Centro - infraestrutura urbana densa
+1,200000,alta,Corredor movimentado - obra complexa
+2,180000,media,Zona consolidada - acesso facilitado
+3,175000,media,Área mista - infraestrutura moderada
+4,160000,baixa,Parque - área aberta disponível
+5,195000,media,Shopping - integração existente
+6,170000,media,Campus - infraestrutura existente
+7,165000,media,Corredor comercial estabelecido
+8,185000,media,Condomínios - padrão elevado
+9,175000,media,Área residencial planejada
+10,190000,media,Corredor importante Norte-Sul
+11,210000,alta,Shopping grande - integração complexa
+12,155000,baixa,Industrial - espaço amplo
+13,150000,baixa,Logística - área disponível
+14,145000,baixa,Industrial consolidada - baixo custo

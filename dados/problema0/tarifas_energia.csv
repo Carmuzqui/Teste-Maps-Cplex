@@ -1,25 +1,25 @@
-periodo,tarifa_reais_kwh,descricao
-0,0.45,Fora de pico - madrugada
-1,0.45,Fora de pico - madrugada
-2,0.45,Fora de pico - madrugada
-3,0.45,Fora de pico - madrugada
-4,0.45,Fora de pico - madrugada
-5,0.45,Fora de pico - madrugada
-6,0.45,Fora de pico - manhã
-7,0.45,Fora de pico - manhã
-8,0.45,Fora de pico - manhã
-9,0.45,Fora de pico - manhã
-10,0.45,Fora de pico - meio-dia
-11,0.45,Fora de pico - meio-dia
-12,0.45,Fora de pico - meio-dia
-13,0.45,Fora de pico - tarde
-14,0.45,Fora de pico - tarde
-15,0.45,Fora de pico - tarde
-16,0.45,Fora de pico - tarde
-17,0.85,Pico - tarde/noite
-18,0.85,Pico - noite
-19,0.85,Pico - noite
-20,0.85,Pico - noite
-21,0.85,Pico - noite
-22,0.45,Fora de pico - noite tardia
-23,0.45,Fora de pico - noite tardia
+periodo,tarifa_reais_kwh,tipo_tarifa,descricao
+0,0.42,fora_pico,Madrugada - demanda muito baixa
+1,0.42,fora_pico,Madrugada - demanda muito baixa
+2,0.42,fora_pico,Madrugada - demanda muito baixa
+3,0.42,fora_pico,Madrugada - demanda muito baixa
+4,0.42,fora_pico,Madrugada - demanda muito baixa
+5,0.42,fora_pico,Madrugada - início atividades
+6,0.55,intermediario,Manhã - demanda crescente
+7,0.65,intermediario,Manhã - pico moderado
+8,0.65,intermediario,Manhã - pico moderado
+9,0.55,intermediario,Manhã - demanda estável
+10,0.48,fora_pico,Meio-dia - demanda moderada
+11,0.48,fora_pico,Meio-dia - demanda moderada
+12,0.48,fora_pico,Meio-dia - demanda moderada
+13,0.55,intermediario,Tarde - demanda crescente
+14,0.65,intermediario,Tarde - demanda elevada
+15,0.75,intermediario,Tarde - pré-pico
+16,0.85,pico,Tarde - início pico
+17,0.95,pico,Tarde/noite - pico máximo
+18,0.95,pico,Noite - pico máximo
+19,0.85,pico,Noite - pico alto
+20,0.75,intermediario,Noite - pós-pico
+21,0.65,intermediario,Noite - demanda decrescente
+22,0.55,fora_pico,Noite tardia - demanda baixa
+23,0.48,fora_pico,Noite tardia - demanda baixa
