@@ -1,0 +1,25 @@
+periodo,tarifa_reais_kwh,tipo_tarifa,descricao
+0,0.35,fora_pico,Madrugada - tarifa reduzida
+1,0.35,fora_pico,Madrugada
+2,0.35,fora_pico,Madrugada
+3,0.35,fora_pico,Madrugada
+4,0.35,fora_pico,Madrugada
+5,0.35,fora_pico,Madrugada
+6,0.50,intermediario,Manhã
+7,0.75,intermediario,Manhã
+8,0.75,intermediario,Manhã
+9,0.65,intermediario,Manhã
+10,0.45,fora_pico,Meio-dia
+11,0.45,fora_pico,Meio-dia
+12,0.45,fora_pico,Meio-dia - irradiação máxima PV
+13,0.65,intermediario,Tarde
+14,0.85,intermediario,Tarde
+15,1.20,pre_pico,Tarde - pré-pico
+16,1.80,pico,Tarde/Noite - PICO ALTO (3x problema0)
+17,2.50,pico,Noite - PICO MÁXIMO (incentiva PV)
+18,2.50,pico,Noite - PICO MÁXIMO
+19,1.80,pico,Noite - PICO ALTO
+20,1.20,intermediario,Noite - pós-pico
+21,0.85,intermediario,Noite
+22,0.50,fora_pico,Noite tardia
+23,0.40,fora_pico,Noite tardia

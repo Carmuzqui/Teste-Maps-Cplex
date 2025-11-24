@@ -1,4 +1,4 @@
 tipo_pv,potencia_kw,area_m2,custo_instalacao_reais,num_vagas,descricao
-0,50,250,150000,6,Carport pequeno - 6 vagas cobertas
-1,100,500,280000,12,Carport médio - 12 vagas cobertas
-2,150,750,400000,18,Carport grande - 18 vagas cobertas
+0,50,250,75000,6,Carport pequeno - 50% mais barato (was 150k)
+1,100,500,140000,12,Carport médio - 50% mais barato (was 280k)
+2,150,750,200000,18,Carport grande - 50% mais barato (was 400k)

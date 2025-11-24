@@ -1,0 +1,43 @@
+# Configuração Problema 1 - Cenário Pro-PV e Cobertura Otimizada
+# Objetivo: Favorecer uso de PV e reduzir número de estações
+
+problema:
+  nome: "Problema 1 - Cenário Pro-PV (Campinas/SP)"
+  descricao: "Tarifas altas + PV competitivo + Cobertura otimizada (raio 5km)"
+  data_criacao: "2025-01-16"
+  versao: "1.0"
+  cidade: "Campinas"
+  estado: "SP"
+  pais: "Brasil"
+
+dimensoes:
+  num_links: 15
+  num_periodos: 24
+  num_tipos_pv: 3
+
+parametros_financeiros:
+  alpha: 0.10              # Taxa de desconto anual (10%)
+  Delta_h: 10              # Horizonte de planejamento (anos)
+  h: 1                     # Intervalo de tempo (horas)
+  moeda: "BRL"
+  
+parametros_otimizacao:
+  gamma: 200               # Peso dos benefícios de transporte
+  min_estacoes: 0          # Deixar otimizador decidir
+  BIG_M: null              # Calcular automaticamente
+  raio_cobertura_km: 5.0   # ← 5 km (vs 3 km problema0) - COBERTURA AMPLIADA
+  
+parametros_area:
+  a: 1.0
+
+solver:
+  time_limit: 900          # 15 minutos
+  mip_gap: 0.02            # 2%
+  log_output: true
+
+observacoes:
+  - "Raio 5 km permite que poucas estações cubram múltiplos links"
+  - "Tarifas pico 3x mais altas que problema0 (R$ 2.50/kWh)"
+  - "Custos PV reduzidos em 30% vs problema0"
+  - "Irradiação otimizada para maximizar geração"
+  - "Demandas menores e distribuídas para favorecer agregação"
