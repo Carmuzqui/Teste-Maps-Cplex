@@ -1,6 +1,16 @@
-link_id,fluxo_agregado_veiculos_dia,fator_beneficio,beneficio_total,observacoes
-0,200,1.8,360.0,Corredor principal de alta prioridade
-1,150,1.5,225.0,Corredor secundário importante
-2,120,1.3,156.0,Zona comercial estratégica
-3,100,1.2,120.0,Acesso industrial relevante
-4,90,1.0,90.0,Zona residencial padrão
+link_id,fluxo_agregado_veiculos_dia,fator_beneficio,beneficio_total,tipo_via,observacoes
+0,450,2.0,900.0,arterial_principal,Centro - convergência de fluxos
+1,380,1.8,684.0,arterial_secundaria,Corredor Glicério - alto tráfego
+2,320,1.6,512.0,coletora_principal,Cambuí - zona nobre movimentada
+3,280,1.5,420.0,coletora_principal,Cambuí sul - residencial denso
+4,350,1.7,595.0,via_parque,Taquaral - lazer e eventos
+5,400,1.9,760.0,via_shopping,Shopping - destino importante
+6,300,1.6,480.0,via_universitaria,Unicamp - fluxo acadêmico
+7,250,1.4,350.0,coletora_universitaria,Corredor Barão - comércio local
+8,220,1.3,286.0,via_residencial_alto,Nova Campinas - baixo tráfego
+9,200,1.2,240.0,via_residencial_alto,Nova Campinas sul - condomínios
+10,340,1.7,578.0,arterial_secundaria,Norte-Sul - importante corredor
+11,420,2.0,840.0,via_shopping,Dom Pedro - maior shopping
+12,280,1.4,392.0,via_industrial,Swift - carga e passeio
+13,260,1.3,338.0,via_logistica,Logística - tráfego pesado
+14,240,1.3,312.0,via_industrial,Vila Industrial - operários

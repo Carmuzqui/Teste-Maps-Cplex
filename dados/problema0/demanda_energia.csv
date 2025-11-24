@@ -1,121 +1,361 @@
-link_id,periodo,demanda_kwh,num_veiculos,perfil
-0,0,60,2,centro_principal
-0,1,60,2,centro_principal
-0,2,30,1,centro_principal
-0,3,30,1,centro_principal
-0,4,90,3,centro_principal
-0,5,240,8,centro_principal
-0,6,450,15,centro_principal
-0,7,600,20,centro_principal
-0,8,450,15,centro_principal
-0,9,300,10,centro_principal
-0,10,240,8,centro_principal
-0,11,240,8,centro_principal
-0,12,300,10,centro_principal
-0,13,360,12,centro_principal
-0,14,450,15,centro_principal
-0,15,540,18,centro_principal
-0,16,660,22,centro_principal
-0,17,750,25,centro_principal
-0,18,600,20,centro_principal
-0,19,450,15,centro_principal
-0,20,300,10,centro_principal
-0,21,180,6,centro_principal
-0,22,120,4,centro_principal
-0,23,90,3,centro_principal
-1,0,60,2,centro_secundario
-1,1,30,1,centro_secundario
-1,2,30,1,centro_secundario
-1,3,60,2,centro_secundario
-1,4,150,5,centro_secundario
-1,5,300,10,centro_secundario
-1,6,540,18,centro_secundario
-1,7,450,15,centro_secundario
-1,8,360,12,centro_secundario
-1,9,300,10,centro_secundario
-1,10,270,9,centro_secundario
-1,11,270,9,centro_secundario
-1,12,330,11,centro_secundario
-1,13,390,13,centro_secundario
-1,14,420,14,centro_secundario
-1,15,480,16,centro_secundario
-1,16,600,20,centro_secundario
-1,17,540,18,centro_secundario
-1,18,360,12,centro_secundario
-1,19,240,8,centro_secundario
-1,20,180,6,centro_secundario
-1,21,120,4,centro_secundario
-1,22,90,3,centro_secundario
-1,23,60,2,centro_secundario
-2,0,30,1,zona_comercial
-2,1,30,1,zona_comercial
-2,2,30,1,zona_comercial
-2,3,30,1,zona_comercial
-2,4,60,2,zona_comercial
-2,5,150,5,zona_comercial
-2,6,300,10,zona_comercial
-2,7,360,12,zona_comercial
-2,8,300,10,zona_comercial
-2,9,240,8,zona_comercial
-2,10,210,7,zona_comercial
-2,11,210,7,zona_comercial
-2,12,240,8,zona_comercial
-2,13,300,10,zona_comercial
-2,14,360,12,zona_comercial
-2,15,420,14,zona_comercial
-2,16,480,16,zona_comercial
-2,17,420,14,zona_comercial
-2,18,300,10,zona_comercial
-2,19,240,8,zona_comercial
-2,20,150,5,zona_comercial
-2,21,90,3,zona_comercial
-2,22,60,2,zona_comercial
-2,23,30,1,zona_comercial
-3,0,90,3,zona_industrial
-3,1,60,2,zona_industrial
-3,2,60,2,zona_industrial
-3,3,60,2,zona_industrial
-3,4,120,4,zona_industrial
-3,5,180,6,zona_industrial
-3,6,240,8,zona_industrial
-3,7,360,12,zona_industrial
-3,8,450,15,zona_industrial
-3,9,420,14,zona_industrial
-3,10,420,14,zona_industrial
-3,11,390,13,zona_industrial
-3,12,390,13,zona_industrial
-3,13,420,14,zona_industrial
-3,14,450,15,zona_industrial
-3,15,420,14,zona_industrial
-3,16,300,10,zona_industrial
-3,17,180,6,zona_industrial
-3,18,120,4,zona_industrial
-3,19,90,3,zona_industrial
-3,20,90,3,zona_industrial
-3,21,90,3,zona_industrial
-3,22,90,3,zona_industrial
-3,23,90,3,zona_industrial
-4,0,60,2,zona_residencial
-4,1,60,2,zona_residencial
-4,2,30,1,zona_residencial
-4,3,30,1,zona_residencial
-4,4,90,3,zona_residencial
-4,5,180,6,zona_residencial
-4,6,240,8,zona_residencial
-4,7,300,10,zona_residencial
-4,8,240,8,zona_residencial
-4,9,180,6,zona_residencial
-4,10,150,5,zona_residencial
-4,11,150,5,zona_residencial
-4,12,180,6,zona_residencial
-4,13,210,7,zona_residencial
-4,14,240,8,zona_residencial
-4,15,300,10,zona_residencial
-4,16,360,12,zona_residencial
-4,17,450,15,zona_residencial
-4,18,540,18,zona_residencial
-4,19,420,14,zona_residencial
-4,20,300,10,zona_residencial
-4,21,180,6,zona_residencial
-4,22,120,4,zona_residencial
-4,23,90,3,zona_residencial
+link_id,periodo,demanda_kwh,num_veiculos,perfil,descricao
+0,0,90,3,centro_principal,Madrugada - poucos veículos
+0,1,90,3,centro_principal,Madrugada - poucos veículos
+0,2,60,2,centro_principal,Madrugada - muito baixo
+0,3,60,2,centro_principal,Madrugada - muito baixo
+0,4,120,4,centro_principal,Início atividades
+0,5,300,10,centro_principal,Manhã cedo - crescente
+0,6,540,18,centro_principal,Manhã - pico moderado
+0,7,750,25,centro_principal,Manhã - pico máximo
+0,8,660,22,centro_principal,Manhã - alto
+0,9,480,16,centro_principal,Meio-dia - moderado
+0,10,420,14,centro_principal,Meio-dia - estável
+0,11,420,14,centro_principal,Meio-dia - estável
+0,12,480,16,centro_principal,Tarde início
+0,13,570,19,centro_principal,Tarde - crescente
+0,14,660,22,centro_principal,Tarde - alto
+0,15,750,25,centro_principal,Tarde - pré-pico
+0,16,900,30,centro_principal,Tarde - pico início
+0,17,1050,35,centro_principal,Noite - pico máximo
+0,18,900,30,centro_principal,Noite - pico alto
+0,19,660,22,centro_principal,Noite - decrescente
+0,20,480,16,centro_principal,Noite - moderado
+0,21,300,10,centro_principal,Noite - baixo
+0,22,180,6,centro_principal,Noite tardia
+0,23,120,4,centro_principal,Noite tardia
+1,0,75,2,centro_secundario,Madrugada
+1,1,60,2,centro_secundario,Madrugada
+1,2,45,1,centro_secundario,Madrugada
+1,3,45,1,centro_secundario,Madrugada
+1,4,90,3,centro_secundario,Início atividades
+1,5,240,8,centro_secundario,Manhã cedo
+1,6,450,15,centro_secundario,Manhã - pico
+1,7,600,20,centro_secundario,Manhã - máximo
+1,8,540,18,centro_secundario,Manhã - alto
+1,9,390,13,centro_secundario,Meio-dia
+1,10,360,12,centro_secundario,Meio-dia
+1,11,360,12,centro_secundario,Meio-dia
+1,12,390,13,centro_secundario,Tarde
+1,13,480,16,centro_secundario,Tarde
+1,14,570,19,centro_secundario,Tarde - alto
+1,15,630,21,centro_secundario,Tarde - pré-pico
+1,16,750,25,centro_secundario,Tarde - pico
+1,17,870,29,centro_secundario,Noite - máximo
+1,18,750,25,centro_secundario,Noite - alto
+1,19,540,18,centro_secundario,Noite
+1,20,390,13,centro_secundario,Noite
+1,21,240,8,centro_secundario,Noite
+1,22,150,5,centro_secundario,Noite tardia
+1,23,90,3,centro_secundario,Noite tardia
+2,0,60,2,cambui_comercial,Madrugada
+2,1,60,2,cambui_comercial,Madrugada
+2,2,30,1,cambui_comercial,Madrugada
+2,3,30,1,cambui_comercial,Madrugada
+2,4,90,3,cambui_comercial,Início
+2,5,210,7,cambui_comercial,Manhã cedo
+2,6,390,13,cambui_comercial,Manhã
+2,7,510,17,cambui_comercial,Manhã - pico
+2,8,450,15,cambui_comercial,Manhã
+2,9,330,11,cambui_comercial,Meio-dia
+2,10,300,10,cambui_comercial,Meio-dia
+2,11,300,10,cambui_comercial,Meio-dia
+2,12,330,11,cambui_comercial,Tarde
+2,13,420,14,cambui_comercial,Tarde
+2,14,510,17,cambui_comercial,Tarde - alto
+2,15,570,19,cambui_comercial,Tarde - pico
+2,16,660,22,cambui_comercial,Noite início
+2,17,750,25,cambui_comercial,Noite - máximo
+2,18,660,22,cambui_comercial,Noite - alto
+2,19,510,17,cambui_comercial,Noite
+2,20,360,12,cambui_comercial,Noite
+2,21,210,7,cambui_comercial,Noite
+2,22,120,4,cambui_comercial,Noite tardia
+2,23,90,3,cambui_comercial,Noite tardia
+3,0,45,1,cambui_residencial,Madrugada
+3,1,45,1,cambui_residencial,Madrugada
+3,2,30,1,cambui_residencial,Madrugada
+3,3,30,1,cambui_residencial,Madrugada
+3,4,60,2,cambui_residencial,Início
+3,5,150,5,cambui_residencial,Manhã cedo
+3,6,300,10,cambui_residencial,Manhã
+3,7,390,13,cambui_residencial,Manhã - pico
+3,8,330,11,cambui_residencial,Manhã
+3,9,240,8,cambui_residencial,Meio-dia
+3,10,210,7,cambui_residencial,Meio-dia
+3,11,210,7,cambui_residencial,Meio-dia
+3,12,240,8,cambui_residencial,Tarde
+3,13,300,10,cambui_residencial,Tarde
+3,14,390,13,cambui_residencial,Tarde
+3,15,480,16,cambui_residencial,Tarde - pico
+3,16,570,19,cambui_residencial,Noite início
+3,17,660,22,cambui_residencial,Noite - máximo
+3,18,600,20,cambui_residencial,Noite - alto
+3,19,480,16,cambui_residencial,Noite
+3,20,330,11,cambui_residencial,Noite
+3,21,180,6,cambui_residencial,Noite
+3,22,120,4,cambui_residencial,Noite tardia
+3,23,60,2,cambui_residencial,Noite tardia
+4,0,75,2,taquaral_lazer,Madrugada
+4,1,60,2,taquaral_lazer,Madrugada
+4,2,45,1,taquaral_lazer,Madrugada
+4,3,45,1,taquaral_lazer,Madrugada
+4,4,90,3,taquaral_lazer,Início
+4,5,180,6,taquaral_lazer,Manhã - lazer início
+4,6,330,11,taquaral_lazer,Manhã - parque abre
+4,7,450,15,taquaral_lazer,Manhã - visitantes
+4,8,510,17,taquaral_lazer,Manhã - pico
+4,9,480,16,taquaral_lazer,Meio-dia - alto
+4,10,420,14,taquaral_lazer,Meio-dia
+4,11,420,14,taquaral_lazer,Meio-dia
+4,12,480,16,taquaral_lazer,Tarde - retorno
+4,13,570,19,taquaral_lazer,Tarde - crescente
+4,14,660,22,taquaral_lazer,Tarde - alto
+4,15,750,25,taquaral_lazer,Tarde - pico fim dia
+4,16,690,23,taquaral_lazer,Noite início
+4,17,570,19,taquaral_lazer,Noite - eventos
+4,18,450,15,taquaral_lazer,Noite
+4,19,330,11,taquaral_lazer,Noite
+4,20,210,7,taquaral_lazer,Noite
+4,21,150,5,taquaral_lazer,Noite
+4,22,90,3,taquaral_lazer,Noite tardia
+4,23,75,2,taquaral_lazer,Noite tardia
+5,0,90,3,shopping_iguatemi,Madrugada - segurança
+5,1,75,2,shopping_iguatemi,Madrugada
+5,2,60,2,shopping_iguatemi,Madrugada
+5,3,60,2,shopping_iguatemi,Madrugada
+5,4,90,3,shopping_iguatemi,Início - funcionários
+5,5,210,7,shopping_iguatemi,Manhã - abertura próxima
+5,6,360,12,shopping_iguatemi,Manhã - abertura 10h
+5,7,480,16,shopping_iguatemi,Manhã - movimento
+5,8,540,18,shopping_iguatemi,Manhã - crescente
+5,9,600,20,shopping_iguatemi,Meio-dia - almoço
+5,10,630,21,shopping_iguatemi,Meio-dia - pico almoço
+5,11,630,21,shopping_iguatemi,Meio-dia - pico almoço
+5,12,600,20,shopping_iguatemi,Tarde - movimento
+5,13,660,22,shopping_iguatemi,Tarde - crescente
+5,14,750,25,shopping_iguatemi,Tarde - alto
+5,15,840,28,shopping_iguatemi,Tarde - pré-pico
+5,16,930,31,shopping_iguatemi,Noite - pico início
+5,17,1020,34,shopping_iguatemi,Noite - pico máximo
+5,18,960,32,shopping_iguatemi,Noite - pico
+5,19,840,28,shopping_iguatemi,Noite - alto
+5,20,660,22,shopping_iguatemi,Noite - fechamento
+5,21,420,14,shopping_iguatemi,Noite - pós-fechamento
+5,22,240,8,shopping_iguatemi,Noite tardia
+5,23,150,5,shopping_iguatemi,Noite tardia
+6,0,60,2,unicamp,Madrugada
+6,1,45,1,unicamp,Madrugada
+6,2,45,1,unicamp,Madrugada
+6,3,45,1,unicamp,Madrugada
+6,4,90,3,unicamp,Início - primeiros
+6,5,210,7,unicamp,Manhã - chegada alunos
+6,6,420,14,unicamp,Manhã - pico entrada
+6,7,570,19,unicamp,Manhã - aulas iniciam
+6,8,510,17,unicamp,Manhã - estável
+6,9,450,15,unicamp,Meio-dia - intervalo
+6,10,420,14,unicamp,Meio-dia - almoço
+6,11,420,14,unicamp,Meio-dia - retorno
+6,12,480,16,unicamp,Tarde - aulas
+6,13,510,17,unicamp,Tarde - laboratórios
+6,14,540,18,unicamp,Tarde - alto
+6,15,510,17,unicamp,Tarde - fim aulas
+6,16,450,15,unicamp,Noite - saída parcial
+6,17,390,13,unicamp,Noite - aulas noturnas
+6,18,330,11,unicamp,Noite - decrescente
+6,19,240,8,unicamp,Noite - baixo
+6,20,180,6,unicamp,Noite - poucos
+6,21,120,4,unicamp,Noite - biblioteca
+6,22,90,3,unicamp,Noite tardia
+6,23,60,2,unicamp,Noite tardia
+7,0,45,1,barao_comercio,Madrugada
+7,1,30,1,barao_comercio,Madrugada
+7,2,30,1,barao_comercio,Madrugada
+7,3,30,1,barao_comercio,Madrugada
+7,4,60,2,barao_comercio,Início
+7,5,150,5,barao_comercio,Manhã cedo
+7,6,300,10,barao_comercio,Manhã
+7,7,390,13,barao_comercio,Manhã - pico
+7,8,360,12,barao_comercio,Manhã
+7,9,300,10,barao_comercio,Meio-dia
+7,10,270,9,barao_comercio,Meio-dia
+7,11,270,9,barao_comercio,Meio-dia
+7,12,300,10,barao_comercio,Tarde
+7,13,360,12,barao_comercio,Tarde
+7,14,420,14,barao_comercio,Tarde
+7,15,450,15,barao_comercio,Tarde - pico
+7,16,420,14,barao_comercio,Noite início
+7,17,360,12,barao_comercio,Noite
+7,18,300,10,barao_comercio,Noite
+7,19,240,8,barao_comercio,Noite
+7,20,180,6,barao_comercio,Noite
+7,21,120,4,barao_comercio,Noite
+7,22,90,3,barao_comercio,Noite tardia
+7,23,60,2,barao_comercio,Noite tardia
+8,0,45,1,nova_campinas_alto,Madrugada
+8,1,30,1,nova_campinas_alto,Madrugada
+8,2,30,1,nova_campinas_alto,Madrugada
+8,3,30,1,nova_campinas_alto,Madrugada
+8,4,60,2,nova_campinas_alto,Início
+8,5,120,4,nova_campinas_alto,Manhã cedo - saída trabalho
+8,6,240,8,nova_campinas_alto,Manhã - pico saída
+8,7,300,10,nova_campinas_alto,Manhã - alto
+8,8,240,8,nova_campinas_alto,Manhã - moderado
+8,9,180,6,nova_campinas_alto,Meio-dia - baixo
+8,10,150,5,nova_campinas_alto,Meio-dia - mínimo
+8,11,150,5,nova_campinas_alto,Meio-dia - mínimo
+8,12,180,6,nova_campinas_alto,Tarde - início retorno
+8,13,240,8,nova_campinas_alto,Tarde - crescente
+8,14,300,10,nova_campinas_alto,Tarde - retorno
+8,15,390,13,nova_campinas_alto,Tarde - pico retorno
+8,16,480,16,nova_campinas_alto,Noite - chegada
+8,17,570,19,nova_campinas_alto,Noite - pico máximo
+8,18,540,18,nova_campinas_alto,Noite - alto
+8,19,450,15,nova_campinas_alto,Noite - estável
+8,20,330,11,nova_campinas_alto,Noite - decrescente
+8,21,210,7,nova_campinas_alto,Noite - baixo
+8,22,120,4,nova_campinas_alto,Noite tardia
+8,23,75,2,nova_campinas_alto,Noite tardia
+9,0,30,1,nova_campinas_cond,Madrugada
+9,1,30,1,nova_campinas_cond,Madrugada
+9,2,30,1,nova_campinas_cond,Madrugada
+9,3,30,1,nova_campinas_cond,Madrugada
+9,4,45,1,nova_campinas_cond,Início
+9,5,90,3,nova_campinas_cond,Manhã cedo
+9,6,180,6,nova_campinas_cond,Manhã - saída
+9,7,240,8,nova_campinas_cond,Manhã - pico
+9,8,180,6,nova_campinas_cond,Manhã
+9,9,120,4,nova_campinas_cond,Meio-dia
+9,10,120,4,nova_campinas_cond,Meio-dia
+9,11,120,4,nova_campinas_cond,Meio-dia
+9,12,150,5,nova_campinas_cond,Tarde
+9,13,180,6,nova_campinas_cond,Tarde
+9,14,240,8,nova_campinas_cond,Tarde
+9,15,300,10,nova_campinas_cond,Tarde - retorno
+9,16,390,13,nova_campinas_cond,Noite - chegada
+9,17,480,16,nova_campinas_cond,Noite - pico
+9,18,450,15,nova_campinas_cond,Noite - alto
+9,19,360,12,nova_campinas_cond,Noite
+9,20,270,9,nova_campinas_cond,Noite
+9,21,180,6,nova_campinas_cond,Noite
+9,22,90,3,nova_campinas_cond,Noite tardia
+9,23,60,2,nova_campinas_cond,Noite tardia
+10,0,75,2,guanabara_corredor,Madrugada
+10,1,60,2,guanabara_corredor,Madrugada
+10,2,45,1,guanabara_corredor,Madrugada
+10,3,45,1,guanabara_corredor,Madrugada
+10,4,90,3,guanabara_corredor,Início
+10,5,210,7,guanabara_corredor,Manhã cedo
+10,6,390,13,guanabara_corredor,Manhã
+10,7,510,17,guanabara_corredor,Manhã - pico
+10,8,480,16,guanabara_corredor,Manhã
+10,9,390,13,guanabara_corredor,Meio-dia
+10,10,360,12,guanabara_corredor,Meio-dia
+10,11,360,12,guanabara_corredor,Meio-dia
+10,12,390,13,guanabara_corredor,Tarde
+10,13,480,16,guanabara_corredor,Tarde
+10,14,570,19,guanabara_corredor,Tarde - alto
+10,15,630,21,guanabara_corredor,Tarde - pico
+10,16,690,23,guanabara_corredor,Noite início
+10,17,750,25,guanabara_corredor,Noite - máximo
+10,18,690,23,guanabara_corredor,Noite - alto
+10,19,570,19,guanabara_corredor,Noite
+10,20,420,14,guanabara_corredor,Noite
+10,21,270,9,guanabara_corredor,Noite
+10,22,150,5,guanabara_corredor,Noite tardia
+10,23,90,3,guanabara_corredor,Noite tardia
+11,0,90,3,dom_pedro_shopping,Madrugada - segurança
+11,1,75,2,dom_pedro_shopping,Madrugada
+11,2,60,2,dom_pedro_shopping,Madrugada
+11,3,60,2,dom_pedro_shopping,Madrugada
+11,4,105,3,dom_pedro_shopping,Início - funcionários
+11,5,240,8,dom_pedro_shopping,Manhã - abertura próxima
+11,6,420,14,dom_pedro_shopping,Manhã - abertura
+11,7,570,19,dom_pedro_shopping,Manhã - movimento
+11,8,660,22,dom_pedro_shopping,Manhã - crescente
+11,9,750,25,dom_pedro_shopping,Meio-dia - almoço início
+11,10,810,27,dom_pedro_shopping,Meio-dia - pico almoço
+11,11,810,27,dom_pedro_shopping,Meio-dia - pico almoço
+11,12,750,25,dom_pedro_shopping,Tarde - movimento
+11,13,840,28,dom_pedro_shopping,Tarde - crescente
+11,14,930,31,dom_pedro_shopping,Tarde - alto
+11,15,1020,34,dom_pedro_shopping,Tarde - pré-pico
+11,16,1110,37,dom_pedro_shopping,Noite - pico início
+11,17,1200,40,dom_pedro_shopping,Noite - pico máximo
+11,18,1140,38,dom_pedro_shopping,Noite - pico
+11,19,1020,34,dom_pedro_shopping,Noite - alto
+11,20,810,27,dom_pedro_shopping,Noite - fechamento
+11,21,510,17,dom_pedro_shopping,Noite - pós-fechamento
+11,22,300,10,dom_pedro_shopping,Noite tardia
+11,23,180,6,dom_pedro_shopping,Noite tardia
+12,0,60,2,swift_industrial,Madrugada - turno noite
+12,1,60,2,swift_industrial,Madrugada
+12,2,60,2,swift_industrial,Madrugada
+12,3,60,2,swift_industrial,Madrugada
+12,4,90,3,swift_industrial,Madrugada - troca turno
+12,5,240,8,swift_industrial,Manhã - entrada turno dia
+12,6,420,14,swift_industrial,Manhã - pico entrada
+12,7,480,16,swift_industrial,Manhã - turno completo
+12,8,450,15,swift_industrial,Manhã - estável
+12,9,420,14,swift_industrial,Meio-dia - intervalo
+12,10,390,13,swift_industrial,Meio-dia - almoço
+12,11,390,13,swift_industrial,Meio-dia - retorno
+12,12,420,14,swift_industrial,Tarde - turno
+12,13,450,15,swift_industrial,Tarde - produção
+12,14,480,16,swift_industrial,Tarde - alta
+12,15,450,15,swift_industrial,Tarde - fim turno
+12,16,390,13,swift_industrial,Noite - troca turno
+12,17,300,10,swift_industrial,Noite - turno noite
+12,18,240,8,swift_industrial,Noite - reduzido
+12,19,180,6,swift_industrial,Noite - baixo
+12,20,150,5,swift_industrial,Noite - mínimo
+12,21,120,4,swift_industrial,Noite - mínimo
+12,22,90,3,swift_industrial,Noite tardia
+12,23,75,2,swift_industrial,Noite tardia
+13,0,45,1,swift_logistica,Madrugada - carga/descarga
+13,1,45,1,swift_logistica,Madrugada
+13,2,60,2,swift_logistica,Madrugada - início movimento
+13,3,75,2,swift_logistica,Madrugada - crescente
+13,4,120,4,swift_logistica,Início - pico logística
+13,5,240,8,swift_logistica,Manhã - alta movimentação
+13,6,360,12,swift_logistica,Manhã - pico operação
+13,7,420,14,swift_logistica,Manhã - máximo
+13,8,390,13,swift_logistica,Manhã - alto
+13,9,360,12,swift_logistica,Meio-dia - estável
+13,10,330,11,swift_logistica,Meio-dia - intervalo
+13,11,330,11,swift_logistica,Meio-dia - retorno
+13,12,360,12,swift_logistica,Tarde - operação
+13,13,390,13,swift_logistica,Tarde - crescente
+13,14,420,14,swift_logistica,Tarde - alto
+13,15,390,13,swift_logistica,Tarde - expedição
+13,16,330,11,swift_logistica,Noite - fim expedição
+13,17,240,8,swift_logistica,Noite - reduzido
+13,18,180,6,swift_logistica,Noite - baixo
+13,19,120,4,swift_logistica,Noite - mínimo
+13,20,90,3,swift_logistica,Noite - muito baixo
+13,21,75,2,swift_logistica,Noite - segurança
+13,22,60,2,swift_logistica,Noite tardia
+13,23,45,1,swift_logistica,Noite tardia
+14,0,45,1,vila_industrial,Madrugada
+14,1,45,1,vila_industrial,Madrugada
+14,2,45,1,vila_industrial,Madrugada
+14,3,60,2,vila_industrial,Madrugada - preparação
+14,4,120,4,vila_industrial,Início - entrada
+14,5,270,9,vila_industrial,Manhã - pico entrada
+14,6,390,13,vila_industrial,Manhã - turno completo
+14,7,420,14,vila_industrial,Manhã - produção
+14,8,390,13,vila_industrial,Manhã - estável
+14,9,360,12,vila_industrial,Meio-dia - intervalo
+14,10,330,11,vila_industrial,Meio-dia - almoço
+14,11,330,11,vila_industrial,Meio-dia - retorno
+14,12,360,12,vila_industrial,Tarde - produção
+14,13,390,13,vila_industrial,Tarde - alta
+14,14,420,14,vila_industrial,Tarde - pico
+14,15,390,13,vila_industrial,Tarde - fim turno
+14,16,300,10,vila_industrial,Noite - saída
+14,17,210,7,vila_industrial,Noite - turno noite
+14,18,150,5,vila_industrial,Noite - reduzido
+14,19,120,4,vila_industrial,Noite - baixo
+14,20,90,3,vila_industrial,Noite - mínimo
+14,21,75,2,vila_industrial,Noite - mínimo
+14,22,60,2,vila_industrial,Noite tardia
+14,23,45,1,vila_industrial,Noite tardia

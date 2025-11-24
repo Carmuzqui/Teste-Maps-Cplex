@@ -1,6 +1,16 @@
 link_id,nome,latitude,longitude,tipo_zona,descricao
-0,Centro_Principal,-3.7319,-38.5267,comercial,Centro histórico e comercial principal
-1,Centro_Secundario,-3.7234,-38.5455,comercial,Centro administrativo secundário
-2,Zona_Comercial,-3.7431,-38.5122,comercial,Distrito comercial expandido
-3,Zona_Industrial,-3.7588,-38.5344,industrial,Parque industrial e logístico
-4,Zona_Residencial,-3.7156,-38.5089,residencial,Bairro residencial de classe média
+0,Centro_Principal,-22.9035,-47.0616,comercial,Centro histórico - alta densidade comercial
+1,Centro_Republica,-22.9055,-47.0585,comercial,Av. Francisco Glicério - corredor comercial
+2,Cambui_Norte,-22.8933,-47.0458,residencial_comercial,Bairro Cambuí - zona nobre norte
+3,Cambui_Sul,-22.8975,-47.0490,residencial_comercial,Cambuí sul - alta densidade residencial
+4,Taquaral_Lagoa,-22.8705,-47.0567,lazer_comercial,Parque Taquaral - área de lazer
+5,Taquaral_Shopping,-22.8745,-47.0520,comercial,Shopping Iguatemi - polo comercial
+6,Barao_Geraldo_Centro,-22.8187,-47.0647,universitaria,Centro de Barão Geraldo - Unicamp
+7,Barao_Geraldo_Albino,-22.8220,-47.0590,universitaria,Av. Albino J. B. Oliveira - corredor
+8,Nova_Campinas,-22.8825,-47.0735,residencial_alto,Nova Campinas - residencial alto padrão
+9,Nova_Campinas_Sul,-22.8890,-47.0695,residencial_alto,Nova Campinas sul - condomínios
+10,Jardim_Guanabara,-22.9125,-47.0455,comercial_servicos,Av. Norte-Sul - corredor comercial
+11,Jardim_Guanabara_Leste,-22.9095,-47.0380,comercial_servicos,Shopping Parque Dom Pedro
+12,Swift,-22.9195,-47.0825,industrial,Distrito industrial Swift
+13,Swift_Logistica,-22.9240,-47.0780,industrial,Área logística Swift
+14,Vila_Industrial,-22.9280,-47.0620,industrial,Vila Industrial - polo produtivo
