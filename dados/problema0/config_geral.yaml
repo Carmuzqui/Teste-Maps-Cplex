@@ -2,7 +2,7 @@
 # Objetivo: Fazer PV economicamente viável e reduzir número de estações
 
 problema:
-  nome: "Problema 1 - Cenário Pro-PV (Campinas/SP)"
+  nome: "Problema 0 - Sintético"
   descricao: "Horizonte 15 anos + Tarifas altas + PV barato + Cobertura otimizada"
   data_criacao: "2025-01-16"
   versao: "1.0"
@@ -21,8 +21,7 @@ parametros_financeiros:
   h: 1
   moeda: "BRL"
   
-parametros_otimizacao:
-  gamma: 200
+parametros_otimizacao:  
   min_estacoes: 0
   BIG_M: null
   raio_cobertura_km: 5.0   # ← 5 km (vs 3) - Permite menos estações

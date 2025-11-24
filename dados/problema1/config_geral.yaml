@@ -2,7 +2,7 @@
 # Objetivo: Favorecer uso de PV e reduzir número de estações
 
 problema:
-  nome: "Problema 1 - Cenário Pro-PV (Campinas/SP)"
+  nome: "Problema 1 - Sintético"
   descricao: "Tarifas altas + PV competitivo + Cobertura otimizada (raio 5km)"
   data_criacao: "2025-01-16"
   versao: "1.0"
@@ -21,8 +21,7 @@ parametros_financeiros:
   h: 1                     # Intervalo de tempo (horas)
   moeda: "BRL"
   
-parametros_otimizacao:
-  gamma: 200               # Peso dos benefícios de transporte
+parametros_otimizacao:  
   min_estacoes: 0          # Deixar otimizador decidir
   BIG_M: null              # Calcular automaticamente
   raio_cobertura_km: 5.0   # ← 5 km (vs 3 km problema0) - COBERTURA AMPLIADA
