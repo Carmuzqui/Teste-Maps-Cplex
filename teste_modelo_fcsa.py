@@ -185,7 +185,7 @@ def main():
     
     try:
         # Resolver problema 0
-        modelo = resolver_problema('dados/problema0')
+        modelo = resolver_problema('dados/problema1')
         
         # Verificar solução
         if modelo.solucao:

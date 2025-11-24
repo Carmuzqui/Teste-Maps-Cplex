@@ -1,12 +1,11 @@
-# Configuração Geral - Problema 0 (15 Links Campinas/SP)
-# Modelo FCSA MILP
-# Baseado na tese de Caio dos Santos
+# Configuração Problema 1 - Cenário Pro-PV
+# Objetivo: Fazer PV economicamente viável e reduzir número de estações
 
 problema:
-  nome: "Problema 0 - Campinas/SP Sintético (15 Links)"
-  descricao: "Modelo completo com restrição (10) e demanda agregada"
+  nome: "Problema 1 - Cenário Pro-PV (Campinas/SP)"
+  descricao: "Horizonte 15 anos + Tarifas altas + PV barato + Cobertura otimizada"
   data_criacao: "2025-01-16"
-  versao: "2.0"
+  versao: "1.0"
   cidade: "Campinas"
   estado: "SP"
   pais: "Brasil"
@@ -17,28 +16,27 @@ dimensoes:
   num_tipos_pv: 3
 
 parametros_financeiros:
-  alpha: 0.10              # Taxa de desconto anual (10%)
-  Delta_h: 10              # Horizonte de planejamento (anos)
-  h: 1                     # Intervalo de tempo (horas)
-  moeda: "BRL"             # Real brasileiro
+  alpha: 0.10              # Taxa de desconto 10%
+  Delta_h: 15              # ← 15 ANOS (vs 10) - Amortiza melhor PV
+  h: 1
+  moeda: "BRL"
   
 parametros_otimizacao:
-  gamma: 200               # Peso dos benefícios de transporte (aumentado para 15 links)
-  min_estacoes: 0          # Mínimo de estações (0 = otimizador decide)
-  BIG_M: null              # null = calcular automaticamente
-  raio_cobertura_km: 3.0   # Raio para cálculo de L_i e I_j (3 km)
+  gamma: 200
+  min_estacoes: 0
+  BIG_M: null
+  raio_cobertura_km: 5.0   # ← 5 km (vs 3) - Permite menos estações
   
 parametros_area:
-  a: 1.0                   # Fator de área para carports
+  a: 1.0
 
 solver:
-  time_limit: 900          # Limite de tempo em segundos (15 min)
-  mip_gap: 0.02            # Gap de otimalidade (2%)
-  log_output: true         # Exibir log do solver
-  threads: 0               # 0 = usar todos os threads disponíveis
+  time_limit: 900
+  mip_gap: 0.02
+  log_output: true
 
 observacoes:
-  - "Raio de 3 km garante cobertura mínima entre zonas urbanas"
-  - "Demanda agregada considera veículos de links vizinhos"
-  - "Método lexicográfico prioriza cobertura sobre custo"
-  - "Net-metering permite exportação/importação de energia PV"
+  - "Horizonte 15 anos melhora payback PV"
+  - "Raio 5 km permite ~3-5 estações cobrindo 15 links"
+  - "Tarifas pico muito altas incentivam PV"
+  - "Custos PV reduzidos 50% vs problema0"

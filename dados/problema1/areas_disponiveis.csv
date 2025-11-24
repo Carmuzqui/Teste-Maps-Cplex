@@ -1,0 +1,16 @@
+link_id,area_disponivel_m2,tipo_estacionamento,observacoes
+0,800,municipal_rotativo,Estacionamento Prefeitura + vias adjacentes
+1,650,comercial_privado,Estacionamentos comerciais corredor
+2,700,condominio_comercial,Shoppings e edifícios comerciais
+3,550,residencial_comercial,Estacionamentos mistos
+4,900,publico_lazer,Estacionamento Parque Taquaral
+5,1000,shopping,Estacionamento Shopping Iguatemi
+6,850,universitario,Estacionamentos Unicamp + adjacências
+7,600,comercial_corredor,Comércios corredor Albino
+8,750,condominio_alto,Condomínios de alto padrão
+9,650,residencial_fechado,Áreas comuns condomínios
+10,700,comercial_corredor,Corredor Norte-Sul
+11,1200,shopping,Shopping Parque Dom Pedro
+12,1500,industrial,Pátios indústrias Swift
+13,1800,logistica,Centros de distribuição
+14,1300,industrial,Galpões Vila Industrial
