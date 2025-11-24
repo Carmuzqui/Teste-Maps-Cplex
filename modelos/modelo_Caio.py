@@ -1024,7 +1024,6 @@ class FCSA_MILP:
         self.alpha = config['parametros_financeiros']['alpha']
         self.Delta_h = config['parametros_financeiros']['Delta_h']
         self.h = config['parametros_financeiros']['h']
-        self.gamma = config['parametros_otimizacao']['gamma']
         self.min_estacoes = config['parametros_otimizacao']['min_estacoes']
         self.a = config['parametros_area']['a']
         self.time_limit = config['solver']['time_limit']
@@ -1172,8 +1171,8 @@ class FCSA_MILP:
         Restrições numeradas conforme Capítulo 4 da tese
         """
         print(f"\n{'='*80}\n🔧 CONSTRUINDO MODELO FCSA MILP - VERSÃO EXATA CAIO\n{'='*80}")
-        print(f"📊 L={len(self.L)} | T={len(self.T)} | K={len(self.K)} | "
-              f"γ={self.gamma} | α={self.alpha*100:.0f}% | r={self.raio_cobertura_km}km")
+        # print(f"📊 L={len(self.L)} | T={len(self.T)} | K={len(self.K)} | "
+        #       f"γ={self.gamma} | α={self.alpha*100:.0f}% | r={self.raio_cobertura_km}km")
         
         m = Model('FCSA_MILP_Exato_Caio')
         
