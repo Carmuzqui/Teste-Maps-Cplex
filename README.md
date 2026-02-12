@@ -18,7 +18,7 @@ O modelo matemático implementado visa otimizar a infraestrutura de recarga cons
 * **Otimização econômica:** análise baseada no Valor Presente (VP), considerando investimento inicial (CAPEX) e custos operacionais (OPEX).
 * **Benefícios de transporte:** considera a conectividade dos trechos (*links*) e a demanda de veículos elétricos.
 
-### Método de solução
+### Método de resolução
 
 O problema é resolvido através de uma abordagem de **otimização lexicográfica em dois passos**, em busca do equilíbrio entre qualidade de serviço e viabilidade econômica:
 
@@ -46,14 +46,16 @@ Para a execução correta deste projeto, é estritamente necessário o cumprimen
 ### Bibliotecas Python
 As dependências estão listadas no arquivo `requirements.txt`. As versões mínimas testadas são:
 
-* `docplex` >= 2.25.236
-* `pandas` >= 2.0.0
-* `numpy` >= 1.24.0
+* `docplex` >= 2.25.0
+* `pandas` >= 1.3.0
+* `numpy` >= 1.21.0
 * `PyYAML` >= 6.0
 * `streamlit` >= 1.28.0
 * `streamlit-folium` >= 0.15.0
 * `folium` >= 0.14.0
+* `plotly` >= 5.15.0
 * `python-dotenv` >= 1.0.0
+* `googlemaps`
 
 ### Editor de código (sugestão)
 Embora o usuário seja livre para utilizar o ambiente de sua preferência, sugere-se o uso do **Visual Studio Code (VS Code)** para edição e execução do projeto.
@@ -99,4 +101,4 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 Para iniciar a interface visual interativa:
 
 ```bash
-py -3.14 -m streamlit run streamlit_app/app_modelo_Caio.pygit 
+py -3.14 -m streamlit run streamlit_app/app_modelo_Caio.py 
