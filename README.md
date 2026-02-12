@@ -72,25 +72,27 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 
 2.  **Criar e ativar ambiente virtual (recomendado):**
     é altamente recomendável isolar as dependências do projeto.
+    
+    *Criação (selecionando a versão 3.10):*
     ```bash
     py -3.10 -m venv venv
     ```
-    Ative o ambiente virtual (comando varia conforme sistema operacional).
-
+    
+    *Ativação (Windows PowerShell):*
     ```bash
     .\venv\Scripts\Activate.ps1
     ```
 
 3.  **Instalar dependências:**
-    com o ambiente ativo, instale as bibliotecas necessárias.
+    com o ambiente ativo (verifique se aparece `(venv)` no terminal), instale as bibliotecas:
     ```bash
-    py -3.10 -m pip install -r requirements.txt
+    python -m pip install -r requirements.txt
     ```
 
 4.  **Verificar instalação do CPLEX:**
-    execute o comando abaixo para confirmar se a biblioteca `docplex` consegue acessar o solver.
+    execute o comando abaixo para confirmar se a biblioteca `docplex` consegue acessar o solver localmente.
     ```bash
-    py -3.10 -c "from docplex.mp.model import Model; print('CPLEX OK')"
+    python -c "from docplex.mp.model import Model; print('CPLEX OK')"
     ```
 
 ---
@@ -98,7 +100,7 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 ## Uso
 
 ### Execução do dashboard (Streamlit)
-Para iniciar a interface visual interativa:
+Para iniciar a interface visual interativa, certifique-se de que o ambiente virtual está ativo e execute:
 
 ```bash
-py -3.10 -m streamlit run streamlit_app/app_modelo_Caio.py
+python -m streamlit run streamlit_app/app_modelo_Caio.py
