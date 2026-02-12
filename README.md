@@ -89,7 +89,17 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
     python -m pip install -r requirements.txt
     ```
 
-4.  **Verificar instalação do CPLEX:**
+4.  **Configuração da API Key (Google Maps):**
+    Para utilizar as funcionalidades de geolocalização e visualização de mapas, é necessário configurar sua chave de API do Google Maps. Por motivos de segurança, esta chave **não** é enviada ao repositório.
+    
+    * Crie um arquivo chamado `.env` na raiz do projeto.
+    * Adicione a seguinte linha ao arquivo:
+        ```text
+        GOOGLE_MAPS_API_KEY=sua_chave_aqui
+        ```
+    * Esta chave será carregada apenas localmente e está protegida pelo arquivo `.gitignore`.
+
+5.  **Verificar instalação do CPLEX:**
     execute o comando abaixo para confirmar se a biblioteca `docplex` consegue acessar o solver localmente.
     ```bash
     python -c "from docplex.mp.model import Model; print('CPLEX OK')"
