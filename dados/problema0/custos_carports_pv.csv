@@ -1,8 +1,4 @@
 tipo_pv,potencia_kw,area_m2,custo_instalacao_reais,num_vagas,descricao
 0,50,250,75000,6,Carport pequeno - 50% mais barato (was 150k)
 1,100,500,140000,12,Carport médio
-<<<<<<< HEAD
 2,150,750,200000,18,Carport grande
-=======
-2,150,750,200000,18,Carport grande
->>>>>>> 46424b6c3fb6e5364cdd056a31f16723c40822a0
