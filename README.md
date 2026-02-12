@@ -2,7 +2,7 @@
 
 Este repositório contém a implementação computacional de um modelo de otimização para o dimensionamento e localização de estações de recarga para veículos elétricos. O projeto baseia-se no modelo FCSA MILP (*Flow Capturing Location Allocation - Mixed Integer Linear Programming*) proposto por Caio dos Santos (Unicamp, 2022).
 
-A ferramenta foi desenvolvida em Python 3.14 e utiliza o solver IBM ILOG CPLEX para a resolução matemática, contando com uma interface gráfica web desenvolvida em Streamlit para visualização de resultados e análise de cenários.
+A ferramenta foi desenvolvida em Python 3.10 e utiliza o solver IBM ILOG CPLEX para a resolução matemática, contando com uma interface gráfica web desenvolvida em Streamlit para visualização de resultados e análise de cenários.
 
 ---
 
@@ -37,8 +37,8 @@ O problema é resolvido através de uma abordagem de **otimização lexicográfi
 Para a execução correta deste projeto, é estritamente necessário o cumprimento dos requisitos abaixo.
 
 ### Ambiente Python
-* **Python 3.14** (O projeto foi desenvolvido especificamente na versão **3.14.3**).
-  * [Download do instalador Python 3.14.3 para Windows](https://www.python.org/ftp/python/3.14.3/python-3.14.3-amd64.exe)
+* **Python 3.10** (Versão estável recomendada para compatibilidade com CPLEX).
+  * [Download do instalador Python 3.10.11 para Windows](https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe)
 
 ### Software de otimização
 * **IBM ILOG CPLEX Optimization Studio**: é necessário ter o CPLEX instalado e licenciado na máquina local para a resolução dos modelos MILP.
@@ -73,7 +73,7 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 2.  **Criar e ativar ambiente virtual (recomendado):**
     é altamente recomendável isolar as dependências do projeto.
     ```bash
-    py -3.14 -m venv venv
+    py -3.10 -m venv venv
     ```
     Ative o ambiente virtual (comando varia conforme sistema operacional).
 
@@ -84,13 +84,13 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 3.  **Instalar dependências:**
     com o ambiente ativo, instale as bibliotecas necessárias.
     ```bash
-    py -3.14 -m pip install -r requirements.txt
+    py -3.10 -m pip install -r requirements.txt
     ```
 
 4.  **Verificar instalação do CPLEX:**
     execute o comando abaixo para confirmar se a biblioteca `docplex` consegue acessar o solver.
     ```bash
-    py -3.14 -c "from docplex.mp.model import Model; print('CPLEX OK')"
+    py -3.10 -c "from docplex.mp.model import Model; print('CPLEX OK')"
     ```
 
 ---
@@ -101,4 +101,4 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 Para iniciar a interface visual interativa:
 
 ```bash
-py -3.14 -m streamlit run streamlit_app/app_modelo_Caio.py 
+py -3.10 -m streamlit run streamlit_app/app_modelo_Caio.py
