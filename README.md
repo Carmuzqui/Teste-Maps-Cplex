@@ -54,12 +54,6 @@ As dependências estão listadas no arquivo `requirements.txt`. As versões mín
 * `streamlit-folium` >= 0.15.0
 * `folium` >= 0.14.0
 * `plotly` >= 5.15.0
-* `python-dotenv`
-* `googlemaps`
-
-### Editor de código (sugestão)
-Embora o usuário seja livre para utilizar o ambiente de sua preferência, sugere-se o uso do **Visual Studio Code (VS Code)** para edição e execução do projeto.
-* [Download do VS Code](https://code.visualstudio.com/download)
 
 ---
 
@@ -74,34 +68,24 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
     é altamente recomendável isolar as dependências do projeto.
     
     *Criação (selecionando a versão 3.10):*
-    ```bash
+    ```powershell
     py -3.10 -m venv venv
     ```
     
     *Ativação (Windows PowerShell):*
-    ```bash
+    ```powershell
     .\venv\Scripts\Activate.ps1
     ```
 
 3.  **Instalar dependências:**
     com o ambiente ativo (verifique se aparece `(venv)` no terminal), instale as bibliotecas:
-    ```bash
+    ```powershell
     python -m pip install -r requirements.txt
     ```
 
-4.  **Configuração da API Key (Google Maps):**
-    Para utilizar as funcionalidades de geolocalização e visualização de mapas, é necessário configurar sua chave de API do Google Maps. Por motivos de segurança, esta chave **não** é enviada ao repositório.
-    
-    * Crie um arquivo chamado `.env` na raiz do projeto.
-    * Adicione a seguinte linha ao arquivo:
-        ```text
-        GOOGLE_MAPS_API_KEY=sua_chave_aqui
-        ```
-    * Esta chave será carregada apenas localmente e está protegida pelo arquivo `.gitignore`.
-
-5.  **Verificar instalação do CPLEX:**
+4.  **Verificar instalação do CPLEX:**
     execute o comando abaixo para confirmar se a biblioteca `docplex` consegue acessar o solver localmente.
-    ```bash
+    ```powershell
     python -c "from docplex.mp.model import Model; print('CPLEX OK')"
     ```
     
@@ -112,5 +96,5 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 ### Execução do dashboard (Streamlit)
 Para iniciar a interface visual interativa, certifique-se de que o ambiente virtual está ativo e execute:
 
-```bash
+```powershell
 python -m streamlit run streamlit_app/app_modelo_Caio.py
