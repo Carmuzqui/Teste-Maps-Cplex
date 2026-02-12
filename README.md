@@ -55,7 +55,7 @@ As dependências estão listadas no arquivo `requirements.txt`. As versões mín
 * `folium` >= 0.14.0
 * `python-dotenv` >= 1.0.0
 
-### Editor de Código (Sugestão)
+### Editor de código (sugestão)
 Embora o usuário seja livre para utilizar o ambiente de sua preferência, sugere-se o uso do **Visual Studio Code (VS Code)** para edição e execução do projeto.
 * [Download do VS Code](https://code.visualstudio.com/download)
 
@@ -99,4 +99,4 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 Para iniciar a interface visual interativa:
 
 ```bash
-py -3.14 -m streamlit run streamlit_app/app_modelo_Caio.py
+py -3.14 -m streamlit run streamlit_app/app_modelo_Caio.pygit 
