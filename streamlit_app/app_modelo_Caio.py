@@ -260,7 +260,7 @@ def criar_mapa_resultados(modelo):
             )
         ).add_to(m)
     
-    # Marcadores de links NÃO instalados
+    # Marcadores de links não instalados
     links_nao_instalados = [l for l in modelo.L if l not in estacoes]
     
     for link_id in links_nao_instalados:

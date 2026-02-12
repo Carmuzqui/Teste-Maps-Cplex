@@ -1,25 +1,25 @@
 periodo,tarifa_reais_kwh,tipo_tarifa,descricao
-0,0.30,fora_pico,Madrugada - tarifa mínima
-1,0.30,fora_pico,Madrugada
-2,0.30,fora_pico,Madrugada
-3,0.30,fora_pico,Madrugada
-4,0.30,fora_pico,Madrugada
-5,0.35,fora_pico,Madrugada final
-6,0.50,intermediario,Manhã
-7,0.75,intermediario,Manhã
-8,0.75,intermediario,Manhã
-9,0.60,intermediario,Manhã
-10,0.40,fora_pico,Meio-dia - geração PV máxima
-11,0.40,fora_pico,Meio-dia - geração PV máxima
-12,0.40,fora_pico,Meio-dia - geração PV máxima
-13,0.60,intermediario,Tarde
-14,1.00,intermediario,Tarde
-15,2.00,pre_pico,Tarde - pré-pico ALTO
-16,3.50,pico,Tarde/Noite - PICO MUITO ALTO (7x problema0)
-17,5.00,pico,Noite - PICO MÁXIMO (5x problema0) - PV já não gera
-18,5.00,pico,Noite - PICO MÁXIMO - Sem PV
-19,3.50,pico,Noite - PICO ALTO - Sem PV
-20,2.00,intermediario,Noite - pós-pico
-21,1.00,intermediario,Noite
-22,0.50,fora_pico,Noite tardia
-23,0.35,fora_pico,Noite tardia
+0,0.52,fora_pico,Madrugada
+1,0.52,fora_pico,Madrugada
+2,0.52,fora_pico,Madrugada
+3,0.52,fora_pico,Madrugada
+4,0.52,fora_pico,Madrugada
+5,0.52,fora_pico,Madrugada
+6,0.52,fora_pico,Madrugada
+7,0.55,fora_pico,Manhã - início de atividades
+8,0.55,fora_pico,Manhã
+9,0.55,fora_pico,Manhã
+10,0.55,fora_pico,Manhã
+11,0.55,fora_pico,Manhã
+12,0.55,fora_pico,Manhã
+13,0.55,fora_pico,Tarde
+14,0.55,fora_pico,Tarde
+15,0.55,fora_pico,Tarde
+16,0.60,fora_pico,Tarde - pré-transição
+17,0.95,intermediario,Horário Intermediário (Subida)
+18,2.15,pico,Horário de Ponta - Máximo Custo (Sem PV)
+19,2.15,pico,Horário de Ponta - Máximo Custo (Sem PV)
+20,2.15,pico,Horário de Ponta - Máximo Custo (Sem PV)
+21,0.95,intermediario,Horário Intermediário (Descida)
+22,0.60,fora_pico,Noite tardia
+23,0.55,fora_pico,Noite tardia
