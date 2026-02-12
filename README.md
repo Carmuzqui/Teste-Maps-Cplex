@@ -55,6 +55,10 @@ As dependências estão listadas no arquivo `requirements.txt`. As versões mín
 * `folium` >= 0.14.0
 * `plotly` >= 5.15.0
 
+### Editor de código (sugestão)
+Sugere-se o uso do **Visual Studio Code (VS Code)** para edição e execução do projeto.
+* [Download do VS Code](https://code.visualstudio.com/download)
+
 ---
 
 ## Instalação
@@ -65,15 +69,8 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
     baixe os arquivos do projeto para o diretório local desejado.
 
 2.  **Criar e ativar ambiente virtual (recomendado):**
-    é altamente recomendável isolar as dependências do projeto.
-    
-    *Criação (selecionando a versão 3.10):*
     ```powershell
     py -3.10 -m venv venv
-    ```
-    
-    *Ativação (Windows PowerShell):*
-    ```powershell
     .\venv\Scripts\Activate.ps1
     ```
 
