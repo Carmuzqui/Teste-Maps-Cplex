@@ -54,7 +54,7 @@ As dependências estão listadas no arquivo `requirements.txt`. As versões mín
 * `streamlit-folium` >= 0.15.0
 * `folium` >= 0.14.0
 * `plotly` >= 5.15.0
-* `python-dotenv` >= 1.0.0
+* `python-dotenv`
 * `googlemaps`
 
 ### Editor de código (sugestão)
