@@ -94,7 +94,6 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
     ```bash
     python -c "from docplex.mp.model import Model; print('CPLEX OK')"
     ```
-
 ---
 
 ## Uso
