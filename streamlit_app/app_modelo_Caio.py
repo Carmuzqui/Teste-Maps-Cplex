@@ -19,8 +19,8 @@ from modelos.modelo_Caio import FCSA_MILP
 
 # Configuração da página
 st.set_page_config(
-    page_title="FCSA MILP - Otimização Eletropostos",
-    page_icon="⚡",
+    page_title="Otimização eletropostos",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -144,7 +144,7 @@ def criar_sidebar():
         
         if info:
             st.markdown("---")
-            st.markdown("#### 📋 Informações do Problema")
+            st.markdown("#### 📋 Informações do problema")
             st.markdown(f"**Nome:** {info['nome']}")
             st.markdown(f"**Cidade:** {info['cidade']}")
             st.markdown(f"**Links:** {info['num_links']}")
@@ -371,7 +371,7 @@ def exibir_detalhes_solucao(modelo):
             st.metric("**TOTAL**", f"R$ {solucao['custo_investimento']:,.0f}")
         
         with col2:
-            st.markdown("#### ⚡ Operação (Valor Presente)")
+            st.markdown("#### ⚡ Operação (valor presente)")
             st.metric(f"Horizonte {modelo.Delta_h} anos", f"R$ {solucao['custo_operacao_vp']:,.0f}")
             # st.metric("Fator VP", f"{modelo.fator_vp:.4f}")
             

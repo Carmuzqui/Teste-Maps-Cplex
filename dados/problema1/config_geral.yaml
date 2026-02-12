@@ -24,7 +24,7 @@ parametros_financeiros:
 parametros_otimizacao:  
   min_estacoes: 0          # Deixar otimizador decidir
   BIG_M: null              # Calcular automaticamente
-  raio_cobertura_km: 5.0   # ← 5 km (vs 3 km problema0) - COBERTURA AMPLIADA
+  raio_cobertura_km: 5.0   # ← 5 km
   
 parametros_area:
   a: 1.0
@@ -34,9 +34,3 @@ solver:
   mip_gap: 0.02            # 2%
   log_output: true
 
-observacoes:
-  - "Raio 5 km permite que poucas estações cubram múltiplos links"
-  - "Tarifas pico 3x mais altas que problema0 (R$ 2.50/kWh)"
-  - "Custos PV reduzidos em 30% vs problema0"
-  - "Irradiação otimizada para maximizar geração"
-  - "Demandas menores e distribuídas para favorecer agregação"

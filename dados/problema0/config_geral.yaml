@@ -17,14 +17,14 @@ dimensoes:
 
 parametros_financeiros:
   alpha: 0.10              # Taxa de desconto 10%
-  Delta_h: 15              # ← 15 ANOS (vs 10) - Amortiza melhor PV
+  Delta_h: 15              # ← 15 anos
   h: 1
   moeda: "BRL"
   
 parametros_otimizacao:  
   min_estacoes: 0
   BIG_M: null
-  raio_cobertura_km: 5.0   # ← 5 km (vs 3) - Permite menos estações
+  raio_cobertura_km: 3.0   # ← 3 km
   
 parametros_area:
   a: 1.0
@@ -34,8 +34,3 @@ solver:
   mip_gap: 0.02
   log_output: true
 
-observacoes:
-  - "Horizonte 15 anos melhora payback PV"
-  - "Raio 5 km permite ~3-5 estações cobrindo 15 links"
-  - "Tarifas pico muito altas incentivam PV"
-  - "Custos PV reduzidos 50% vs problema0"

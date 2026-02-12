@@ -12,23 +12,23 @@ O modelo matemático implementado visa otimizar a infraestrutura de recarga cons
 
 ### Características principais
 
-* **Cobertura espacial:** Utiliza restrição de raio geográfico para garantir o atendimento da demanda.
-* **Integração fotovoltaica:** Dimensionamento simultâneo de sistemas fotovoltaicos (*carports* PV) nas estações.
-* **Gestão energética:** Implementação de *net-metering* para gestão de créditos de energia.
-* **Otimização econômica:** Análise baseada no Valor Presente (VP), considerando investimento inicial (CAPEX) e custos operacionais (OPEX).
-* **Benefícios de transporte:** Considera a conectividade dos trechos (*links*) e a demanda de veículos elétricos.
+* **Cobertura espacial:** utiliza restrição de raio geográfico para garantir o atendimento da demanda.
+* **Integração fotovoltaica:** dimensionamento simultâneo de sistemas fotovoltaicos (*carports* PV) nas estações.
+* **Gestão energética:** implementação de *net-metering* para gestão de créditos de energia.
+* **Otimização econômica:** análise baseada no Valor Presente (VP), considerando investimento inicial (CAPEX) e custos operacionais (OPEX).
+* **Benefícios de transporte:** considera a conectividade dos trechos (*links*) e a demanda de veículos elétricos.
 
 ### Método de solução
 
-O problema é resolvido através de uma abordagem de **Otimização lexicográfica em dois passos**, garantindo o equilíbrio entre qualidade de serviço e viabilidade econômica:
+O problema é resolvido através de uma abordagem de **otimização lexicográfica em dois passos**, em busca do equilíbrio entre qualidade de serviço e viabilidade econômica:
 
 1.  **Passo 1 (maximização de benefícios):**
-    Minimizar a função objetivo negativa (equivalentemente, maximizar a positiva) focada na cobertura e importância dos trechos:
+    minimizar a função objetivo negativa (equivalentemente, maximizar a positiva) focada na cobertura e importância dos trechos:
     *Função:* $f = \sum (xl \cdot rol \cdot betal)$
     Onde *xl* é a variável binária de cobertura, *rol* é o parâmetro de conectividade e *betal* o benefício de transporte.
 
 2.  **Passo 2 (minimização de custos):**
-    Minimizar a soma dos custos de investimento ($C_{in}$) e operação ($C_{op}$), sujeito à restrição de que o valor da função de benefícios $f$ seja igual ao valor ótimo ($f_{optimo}$) encontrado no Passo 1.
+    minimizar a soma dos custos de investimento ($C_{in}$) e operação ($C_{op}$), sujeito à restrição de que o valor da função de benefícios $f$ seja igual ao valor ótimo ($f_{optimo}$) encontrado no Passo 1.
 
 ---
 
@@ -37,10 +37,10 @@ O problema é resolvido através de uma abordagem de **Otimização lexicográfi
 Para a execução correta deste projeto, é estritamente necessário o cumprimento dos requisitos abaixo.
 
 ### Ambiente Python
-* **Python 3.10** (Versão obrigatória devido a compatibilidades de bibliotecas).
+* **Python 3.10** (versão obrigatória devido a compatibilidades de bibliotecas).
 
 ### Software de otimização
-* **IBM ILOG CPLEX Optimization Studio**: É necessário ter o CPLEX instalado e licenciado na máquina local para a resolução dos modelos MILP.
+* **IBM ILOG CPLEX Optimization Studio**: é necessário ter o CPLEX instalado e licenciado na máquina local para a resolução dos modelos MILP.
 
 ### Bibliotecas Python
 As dependências estão listadas no arquivo `requirements.txt`. As versões mínimas testadas são:
@@ -61,23 +61,27 @@ As dependências estão listadas no arquivo `requirements.txt`. As versões mín
 Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 
 1.  **Clonar o repositório:**
-    Baixe os arquivos do projeto para o diretório local desejado.
+    baixe os arquivos do projeto para o diretório local desejado.
 
-2.  **Criar ambiente virtual (recomendado):**
-    É altamente recomendável isolar as dependências do projeto.
+2.  **Criar e ativar ambiente virtual (recomendado):**
+    é altamente recomendável isolar as dependências do projeto.
     ```bash
     py -3.10 -m venv venv
     ```
     Ative o ambiente virtual (comando varia conforme sistema operacional).
 
+    ```bash
+    .\venv\Scripts\Activate.ps1
+    ```
+
 3.  **Instalar dependências:**
-    Com o ambiente ativo, instale as bibliotecas necessárias.
+    com o ambiente ativo, instale as bibliotecas necessárias.
     ```bash
     py -3.10 -m pip install -r requirements.txt
     ```
 
 4.  **Verificar instalação do CPLEX:**
-    Execute o comando abaixo para confirmar se a biblioteca `docplex` consegue acessar o solver.
+    execute o comando abaixo para confirmar se a biblioteca `docplex` consegue acessar o solver.
     ```bash
     py -3.10 -c "from docplex.mp.model import Model; print('CPLEX OK')"
     ```

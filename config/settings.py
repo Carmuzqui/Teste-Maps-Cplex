@@ -2,9 +2,9 @@
 Configurações da aplicação com variáveis de ambiente
 """
 
-import os
-from typing import Optional
-from dotenv import load_dotenv
+import os                       #Permite interagir diretamente com o sistema operacional
+from typing import Optional     #Ajuda ferramentas de análise de código a prevenir erros lógicos
+from dotenv import load_dotenv  #Carrega automaticamente as variáveis definidas no arquivo .env
 
 # Carregar variáveis do arquivo .env
 load_dotenv()
@@ -24,7 +24,7 @@ class Config:
     
     # Configurações do Streamlit
     PAGE_TITLE: str = "Otimização de Eletropostos - Campinas"
-    PAGE_ICON: str = "⚡"
+    PAGE_ICON: str = ""
     
     # Debug
     DEBUG: bool = os.getenv('DEBUG', 'False').lower() == 'true'

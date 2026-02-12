@@ -48,3 +48,8 @@ wheels/
 # OS
 .DS_Store
 Thumbs.db
+
+# Entornos virtuales
+venv/
+.venv/
+env/
